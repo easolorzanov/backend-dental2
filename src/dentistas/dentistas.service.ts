@@ -65,7 +65,11 @@ export class DentistasService {
   }
 
   async remove(id: string) {
-    const dentista = await this.findOne(id);
+    //const dentista = await this.findOne(id);
+    const dentista = await this.dentistaRepository.findOne({
+      where: { id: id },
+      relations: ['usuario'],
+    });
     await this.dentistaRepository.remove(dentista);
   }
 }

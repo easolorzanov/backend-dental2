@@ -28,7 +28,7 @@ export class Dentista {
     @Column('varchar')
     celular: string;
   
-    @OneToOne(() => Usuario, usuario => usuario.dentista, {eager: true})
+    @OneToOne(() => Usuario, usuario => usuario.dentista, {eager: true, cascade: ['remove'], onDelete: 'CASCADE' })
     @JoinColumn()
     usuario: Usuario;
 
