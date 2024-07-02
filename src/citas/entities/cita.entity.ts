@@ -22,12 +22,15 @@ export class Cita {
     @ManyToOne(() => Dentista, dentista => dentista.citas)
     dentista: Dentista;
 
-    @ManyToMany(() => Servicio, servicios => servicios.citas)
+    @ManyToMany(() => Servicio, servicios => servicios.citas, {eager:true})
     @JoinTable({name:'cita_servicio'})
     servicios: Servicio[];
 
     @Column({type: "decimal", precision: 10, scale: 2, default: 0})
     total_pagar: number;
+
+    @Column()
+    tiempo_total: number;
 
     //@ManyToOne(() => Servicio, servicios => servicios.citas)
     //@JoinTable()

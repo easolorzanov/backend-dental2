@@ -9,7 +9,8 @@ import {
     IsDate,
     IsEnum,
     IsUUID,
-    IsDateString
+    IsDateString,
+    IsArray
   } from 'class-validator';
 import { Dentista } from 'src/dentistas/entities/dentista.entity';
 import { Paciente } from 'src/pacientes/entities/paciente.entity';
@@ -33,11 +34,15 @@ export class CreateCitaDto {
     @IsNotEmpty()
     dentista: Dentista;
 
-    @IsString()
+  
     @IsNotEmpty()
-    servicios: Servicio;
+    servicios: Servicio[];
 
     @IsNumber()
     @IsNotEmpty()
-    total_pagar: Servicio;
+    total_pagar: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    tiempo_total: number;
 }

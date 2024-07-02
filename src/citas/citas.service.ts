@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { CreateCitaDto } from './dto/create-cita.dto';
 import { UpdateCitaDto } from './dto/update-cita.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { In, Repository } from 'typeorm';
+import { Cita } from './entities/cita.entity';
+import { Servicio } from 'src/servicios/entities/servicio.entity';
 
 @Injectable()
 export class CitasService {
-  create(createCitaDto: CreateCitaDto) {
-    return 'This action adds a new cita';
+  private readonly logger = new Logger('CitasService');
+
+  constructor(
+    @InjectRepository(Cita)
+    private readonly citaRepository: Repository<Cita>,
+    @InjectRepository(Servicio)
+    private readonly servicioRepository: Repository<Servicio>,
+  ) {}
+
+  async create(createCitaDto: CreateCitaDto) {
+    createCitaDto.servicios = await this.servicioRepository.find({ where: { id: In(createCitaDto.servicios) } });
+    try {
+      const servicio = this.citaRepository.create(createCitaDto);
+      await this.citaRepository.save(servicio);
+      return servicio;
+    } catch (error) {
+      console.log(error);
+      if (error.code === '23505') throw new BadRequestException(error.detail);
+      this.logger.error(error);
+      throw new InternalServerErrorException('Error no esperado');
+    }
   }
 
-  findAll() {
-    return `This action returns all citas`;
+  async findAll() {
+    const citas = await this.citaRepository.find({});
+    return citas
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return `This action returns a #${id} cita`;
   }
 
-  update(id: number, updateCitaDto: UpdateCitaDto) {
+  async update(id: number, updateCitaDto: UpdateCitaDto) {
     return `This action updates a #${id} cita`;
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return `This action removes a #${id} cita`;
   }
 }
