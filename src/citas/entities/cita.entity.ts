@@ -25,6 +25,13 @@ export class Cita {
     @ManyToMany(() => Servicio, servicios => servicios.citas)
     @JoinTable({name:'cita_servicio'})
     servicios: Servicio[];
+
+    @Column({type: "decimal", precision: 10, scale: 2, default: 0})
+    total_pagar: number;
+
+    //@ManyToOne(() => Servicio, servicios => servicios.citas)
+    //@JoinTable()
+    //servicios: Servicio[];
     
     @OneToMany(() => HistorialClinico, historial => historial.cita)
     historiales: HistorialClinico[];  

@@ -16,12 +16,12 @@ export class Servicio {
     @Column({type: "decimal", precision: 10, scale: 2, default: 0})
     precio: number;
   
-    @Column('int')
+    @Column()
     duracion: number;
     
     @ManyToMany(() => Cita, citas => citas.servicios)
     citas: Cita[];
   
-   // @OneToMany(() => Cita, cita => cita.servicio)
-   // citas: Cita[];
+    //@OneToMany(() => Cita, cita => cita.servicios)
+    //citas: Cita[];
 }
