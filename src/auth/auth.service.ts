@@ -32,10 +32,25 @@ export class AuthService {
     if (!userValid) {
       throw new BadRequestException('No existe el usuario o contraseña incorrecta');
     }
-    const payload = { userId:userValid.id, username: userValid.username };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    //console.log(userValid)
+    if(userValid.role.nombre=="ADMINISTRADOR"){
+      //console.log(userValid.id)
+      const datos = await this.dentistasService.findOneIdUser(userValid)
+      //console.log(datos)
+      const payload = { userId:userValid.id, username: userValid.username, role: userValid.role.nombre, nombre: `${datos.nombre} ${datos.apellido}` };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+      
+    }
+    if(userValid.role.nombre=="CLIENTE"){
+      //console.log(userValid.id)
+      const datos = await this.pacientesService.findOne(userValid.id)
+      const payload = { userId:userValid.id, username: userValid.username, role: userValid.role.nombre, nombre: `${datos.nombre} ${datos.apellido}` };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
+    }
   }
 
   async register(data: any) {

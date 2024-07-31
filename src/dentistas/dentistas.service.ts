@@ -4,6 +4,7 @@ import { UpdateDentistaDto } from './dto/update-dentista.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Dentista } from './entities/dentista.entity';
 import { Repository } from 'typeorm';
+import { Usuario } from 'src/usuarios/entities/usuario.entity';
 
 @Injectable()
 export class DentistasService {
@@ -43,8 +44,14 @@ export class DentistasService {
   }
 
   async findOne(id: string) {
-    const paciente = await this.dentistaRepository.findOneBy({ id });
-    if (!paciente) throw new NotFoundException(`Paciente ${id} no encontrado`);
+    const dentista = await this.dentistaRepository.findOneBy({ id });
+    if (!dentista) throw new NotFoundException(`Dentista ${id} no encontrado`);
+    return dentista;
+  }
+
+  async findOneIdUser(usuario: Usuario) {
+    const paciente = await this.dentistaRepository.findOneBy({ usuario });
+    if (!paciente) throw new NotFoundException(`Dentista ${usuario} no encontrado`);
     return paciente;
   }
 
