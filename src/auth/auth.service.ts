@@ -37,7 +37,7 @@ export class AuthService {
       //console.log(userValid.id)
       const datos = await this.dentistasService.findOneIdUser(userValid)
       //console.log(datos)
-      const payload = { userId:userValid.id, username: userValid.username, role: userValid.role.nombre, nombre: `${datos.nombre} ${datos.apellido}` };
+      const payload = { userId:userValid.id, username: userValid.username, role: userValid.role.nombre, nombre: `${datos.nombre} ${datos.apellido}` , personId: datos.id };
       return {
         access_token: this.jwtService.sign(payload),
       };
@@ -45,8 +45,8 @@ export class AuthService {
     }
     if(userValid.role.nombre=="CLIENTE"){
       //console.log(userValid.id)
-      const datos = await this.pacientesService.findOne(userValid.id)
-      const payload = { userId:userValid.id, username: userValid.username, role: userValid.role.nombre, nombre: `${datos.nombre} ${datos.apellido}` };
+      const datos = await this.pacientesService.findOneIdUser(userValid)
+      const payload = { userId:userValid.id, username: userValid.username, role: userValid.role.nombre, nombre: `${datos.nombre} ${datos.apellido}` , personId: datos.id  };
       return {
         access_token: this.jwtService.sign(payload),
       };
@@ -113,6 +113,7 @@ export class AuthService {
       const registro = await this.dentistasService.create(datosPersonales);
       return registro;
     }
+    return new BadRequestException("Rol no existente")
 
     
   }

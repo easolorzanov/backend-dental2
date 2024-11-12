@@ -20,6 +20,7 @@ export class CitasService {
   async create(createCitaDto: CreateCitaDto) {
     createCitaDto.servicios = await this.servicioRepository.find({ where: { id: In(createCitaDto.servicios) } });
     try {
+      //console.log(createCitaDto)
       const servicio = this.citaRepository.create(createCitaDto);
       await this.citaRepository.save(servicio);
       return servicio;
