@@ -37,15 +37,53 @@ export class CitasService {
     return citas
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} cita`;
+
+  async findByPaciente(pacienteId: string) {
+    const citasC = await this.citaRepository.createQueryBuilder('citas')
+    .leftJoinAndSelect('citas.paciente', 'paciente')
+    .leftJoinAndSelect('citas.dentista', 'dentista')
+    .leftJoinAndSelect('citas.servicios', 'servicio')
+    .where('citas.paciente.id = :pacienteId', { pacienteId })
+    .getMany();
+    return citasC;
+  }
+
+  async findByDentista(dentistaId: string) {
+    const citasC = await this.citaRepository.createQueryBuilder('citas')
+    .leftJoinAndSelect('citas.paciente', 'paciente')
+    .leftJoinAndSelect('citas.dentista', 'dentista')
+    .leftJoinAndSelect('citas.servicios', 'servicio')
+    .where('citas.dentista.id = :dentistaId', { dentistaId })
+    .getMany();
+    return citasC;
+  }
+
+  async findOne(id: string) {
+    const citasC = await this.citaRepository.createQueryBuilder('citas')
+    .leftJoinAndSelect('citas.paciente', 'paciente')
+    .leftJoinAndSelect('citas.dentista', 'dentista')
+    .leftJoinAndSelect('citas.servicios', 'servicio')
+    .where('citas.id = :id', { id })
+    .getMany();
+    return citasC;
   }
 
   async update(id: number, updateCitaDto: UpdateCitaDto) {
     return `This action updates a #${id} cita`;
   }
 
-  async remove(id: number) {
-    return `This action removes a #${id} cita`;
+  async remove(id: string) {
+    const cita = await this.citaRepository.findOne({
+      where: { id: id },
+      relations: ['servicios'],
+    });
+    if (cita) {
+      cita.servicios = [];
+      await this.citaRepository.save(cita); 
+ 
+      await this.citaRepository.remove(cita);
+    } else {
+      throw new Error('Cita no encontrada');
+    }
   }
 }

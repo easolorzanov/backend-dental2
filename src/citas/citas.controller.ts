@@ -19,7 +19,17 @@ export class CitasController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.citasService.findOne(+id);
+    return this.citasService.findOne(id);
+  }
+
+  @Get('dentistaId/:id')
+  findByDentista(@Param('id') id: string) {
+    return this.citasService.findByDentista(id);
+  }
+
+  @Get('pacienteId/:id')
+  findByPaciente(@Param('id') id: string) {
+    return this.citasService.findByPaciente(id);
   }
 
   @Patch(':id')
@@ -29,6 +39,6 @@ export class CitasController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.citasService.remove(+id);
+    return this.citasService.remove(id);
   }
 }
