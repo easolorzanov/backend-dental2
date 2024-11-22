@@ -34,7 +34,7 @@ export class CitasController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCitaDto: UpdateCitaDto) {
-    return this.citasService.update(+id, updateCitaDto);
+    return this.citasService.update(id, updateCitaDto);
   }
 
   @Delete(':id')

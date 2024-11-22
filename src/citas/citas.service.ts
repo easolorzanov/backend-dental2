@@ -22,6 +22,7 @@ export class CitasService {
     try {
       //console.log(createCitaDto)
       const servicio = this.citaRepository.create(createCitaDto);
+      console.log(servicio)
       await this.citaRepository.save(servicio);
       return servicio;
     } catch (error) {
@@ -68,8 +69,22 @@ export class CitasService {
     return citasC;
   }
 
-  async update(id: number, updateCitaDto: UpdateCitaDto) {
-    return `This action updates a #${id} cita`;
+  async update(id: string, updateCitaDto: UpdateCitaDto) {
+    updateCitaDto.servicios = await this.servicioRepository.find({ where: { id: In(updateCitaDto.servicios) } });
+    console.log(updateCitaDto)
+    const cita = await this.citaRepository.preload({
+      id: id,
+      ...updateCitaDto,
+    });
+    if (!cita) throw new NotFoundException(`Cita ${id} no encontrada`);
+    //console.log(cita)
+    try {
+      await this.citaRepository.save(cita);
+      return cita;
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException(error.detail);
+    }
   }
 
   async remove(id: string) {
