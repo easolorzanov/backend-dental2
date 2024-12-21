@@ -15,57 +15,76 @@ export class CitasService {
     private readonly citaRepository: Repository<Cita>,
     @InjectRepository(Servicio)
     private readonly servicioRepository: Repository<Servicio>,
-  ) {}
+  ) { }
 
   async create(createCitaDto: CreateCitaDto) {
+    const citaExistente = await this.citaRepository.findOne({
+      where: {
+        fecha: createCitaDto.fecha
+      },
+    });
+    if (citaExistente)
+      throw new BadRequestException('Ya existe una cita agendada para esta fecha y hora');
+
     createCitaDto.servicios = await this.servicioRepository.find({ where: { id: In(createCitaDto.servicios) } });
+
     try {
-      //console.log(createCitaDto)
       const servicio = this.citaRepository.create(createCitaDto);
-      console.log(servicio)
       await this.citaRepository.save(servicio);
       return servicio;
     } catch (error) {
-      console.log(error);
-      if (error.code === '23505') throw new BadRequestException(error.detail);
+      if (error.code === '23505') {
+        throw new BadRequestException(error.detail);
+      }
       this.logger.error(error);
       throw new InternalServerErrorException('Error no esperado');
     }
   }
+
 
   async findAll() {
     const citas = await this.citaRepository.find({});
     return citas
   }
 
-
   async findByPaciente(pacienteId: string) {
     const citasC = await this.citaRepository.createQueryBuilder('citas')
-    .leftJoinAndSelect('citas.paciente', 'paciente')
-    .leftJoinAndSelect('citas.dentista', 'dentista')
-    .leftJoinAndSelect('citas.servicios', 'servicio')
-    .where('citas.paciente.id = :pacienteId', { pacienteId })
-    .getMany();
+      .leftJoinAndSelect('citas.paciente', 'paciente')
+      .leftJoinAndSelect('citas.dentista', 'dentista')
+      .leftJoinAndSelect('citas.servicios', 'servicio')
+      .where('citas.paciente.id = :pacienteId', { pacienteId })
+      .getMany();
     return citasC;
   }
 
   async findByDentista(dentistaId: string) {
     const citasC = await this.citaRepository.createQueryBuilder('citas')
-    .leftJoinAndSelect('citas.paciente', 'paciente')
-    .leftJoinAndSelect('citas.dentista', 'dentista')
-    .leftJoinAndSelect('citas.servicios', 'servicio')
-    .where('citas.dentista.id = :dentistaId', { dentistaId })
-    .getMany();
+      .leftJoinAndSelect('citas.paciente', 'paciente')
+      .leftJoinAndSelect('citas.dentista', 'dentista')
+      .leftJoinAndSelect('citas.servicios', 'servicio')
+      .where('citas.dentista.id = :dentistaId', { dentistaId })
+      .andWhere('citas.estado = :estado', { estado: 'PENDIENTE' })
+      .getMany();
+    return citasC;
+  }
+
+  async findByDentista2(dentistaId: string) {
+    const citasC = await this.citaRepository.createQueryBuilder('citas')
+      .leftJoinAndSelect('citas.paciente', 'paciente')
+      .leftJoinAndSelect('citas.dentista', 'dentista')
+      .leftJoinAndSelect('citas.servicios', 'servicio')
+      .where('citas.dentista.id = :dentistaId', { dentistaId })
+      .getMany();
     return citasC;
   }
 
   async findOne(id: string) {
     const citasC = await this.citaRepository.createQueryBuilder('citas')
-    .leftJoinAndSelect('citas.paciente', 'paciente')
-    .leftJoinAndSelect('citas.dentista', 'dentista')
-    .leftJoinAndSelect('citas.servicios', 'servicio')
-    .where('citas.id = :id', { id })
-    .getMany();
+      .leftJoinAndSelect('citas.paciente', 'paciente')
+      .leftJoinAndSelect('citas.dentista', 'dentista')
+      .leftJoinAndSelect('citas.servicios', 'servicio')
+      .where('citas.id = :id', { id })
+      .getMany();
     return citasC;
   }
 
@@ -94,11 +113,19 @@ export class CitasService {
     });
     if (cita) {
       cita.servicios = [];
-      await this.citaRepository.save(cita); 
- 
+      await this.citaRepository.save(cita);
+
       await this.citaRepository.remove(cita);
     } else {
       throw new Error('Cita no encontrada');
     }
+  }
+
+  async doneCita(id: string) {
+    const cita = await this.citaRepository.findOneBy({ id: id });
+    if (!cita) throw new NotFoundException(`Cita ${id} no encontrada`);
+    cita.estado = 'HECHO';
+    await this.citaRepository.save(cita);
+    return cita;
   }
 }

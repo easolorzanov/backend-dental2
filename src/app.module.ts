@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule,ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PacientesModule } from './pacientes/pacientes.module';
 import { DentistasModule } from './dentistas/dentistas.module';
 import { RolesModule } from './roles/roles.module';
@@ -23,7 +23,7 @@ import { AuthModule } from './auth/auth.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        type:'postgres',
+        type: 'postgres',
         host: config.get('DB_HOST'),
         port: config.get('DB_PORT'),
         database: config.get('DB_NAME'),
@@ -32,7 +32,7 @@ import { AuthModule } from './auth/auth.module';
         timezone: 'Etc/UTC',
         autoLoadEntities: true,
         synchronize: true,
-       })
+      })
     }),
     PacientesModule,
     DentistasModule,
@@ -47,4 +47,4 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

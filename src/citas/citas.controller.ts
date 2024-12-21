@@ -5,7 +5,7 @@ import { UpdateCitaDto } from './dto/update-cita.dto';
 
 @Controller('citas')
 export class CitasController {
-  constructor(private readonly citasService: CitasService) {}
+  constructor(private readonly citasService: CitasService) { }
 
   @Post()
   create(@Body() createCitaDto: CreateCitaDto) {
@@ -27,6 +27,11 @@ export class CitasController {
     return this.citasService.findByDentista(id);
   }
 
+  @Get('dentistaId2/:id')
+  findByDentista2(@Param('id') id: string) {
+    return this.citasService.findByDentista2(id);
+  }
+
   @Get('pacienteId/:id')
   findByPaciente(@Param('id') id: string) {
     return this.citasService.findByPaciente(id);
@@ -40,5 +45,10 @@ export class CitasController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.citasService.remove(id);
+  }
+
+  @Get('/done/:id')
+  doneCita(@Param('id') id: string) {
+    return this.citasService.doneCita(id);
   }
 }
