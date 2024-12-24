@@ -9,8 +9,6 @@ import { RolesModule } from './roles/roles.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { CitasModule } from './citas/citas.module';
 import { ServiciosModule } from './servicios/servicios.module';
-import { HistorialClinicoModule } from './historial-clinico/historial-clinico.module';
-import { RecetaModule } from './receta/receta.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -40,8 +38,6 @@ import { AuthModule } from './auth/auth.module';
     UsuariosModule,
     CitasModule,
     ServiciosModule,
-    HistorialClinicoModule,
-    RecetaModule,
     AuthModule,
   ],
   controllers: [AppController],

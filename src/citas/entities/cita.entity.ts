@@ -1,5 +1,4 @@
 import { Dentista } from 'src/dentistas/entities/dentista.entity';
-import { HistorialClinico } from 'src/historial-clinico/entities/historial-clinico.entity';
 import { Paciente } from 'src/pacientes/entities/paciente.entity';
 import { Servicio } from 'src/servicios/entities/servicio.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany,ManyToMany,JoinTable } from 'typeorm';
@@ -35,8 +34,4 @@ export class Cita {
     //@ManyToOne(() => Servicio, servicios => servicios.citas)
     //@JoinTable()
     //servicios: Servicio[];
-    
-    @OneToMany(() => HistorialClinico, historial => historial.cita)
-    historiales: HistorialClinico[];  
-
 }

@@ -18,11 +18,12 @@ export class CitasService {
   ) { }
 
   async create(createCitaDto: CreateCitaDto) {
-    const citaExistente = await this.citaRepository.findOne({
-      where: {
-        fecha: createCitaDto.fecha
-      },
-    });
+    const citaExistente = await this.citaRepository
+      .createQueryBuilder('cita')
+      .where('cita.fecha = :fecha', { fecha: createCitaDto.fecha })
+      .andWhere('cita.dentista = :dentista', { dentista: createCitaDto.dentista })
+      .getOne();
+
     if (citaExistente)
       throw new BadRequestException('Ya existe una cita agendada para esta fecha y hora');
 
@@ -89,11 +90,11 @@ export class CitasService {
   }
 
   async update(id: string, updateCitaDto: UpdateCitaDto) {
-    const citaExistente = await this.citaRepository.findOne({
-      where: {
-        fecha: updateCitaDto.fecha,
-      },
-    });
+    const citaExistente = await this.citaRepository
+      .createQueryBuilder('cita')
+      .where('cita.fecha = :fecha', { fecha: updateCitaDto.fecha })
+      .andWhere('cita.dentista = :dentista', { dentista: updateCitaDto.dentista })
+      .getOne();
 
     if (citaExistente) throw new BadRequestException('Ya existe una cita agendada para esta fecha y hora');
 

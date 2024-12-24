@@ -5,7 +5,7 @@ import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 
 @Controller('usuarios')
 export class UsuariosController {
-  constructor(private readonly usuariosService: UsuariosService) {}
+  constructor(private readonly usuariosService: UsuariosService) { }
 
   @Post()
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
@@ -30,6 +30,11 @@ export class UsuariosController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usuariosService.remove(id);
+  }
+
+  @Patch('pass/:id')
+  updatePass(@Param('id') id: string, @Body() pass: { newPassword: string }) {
+    return this.usuariosService.updatePassword(id, pass.newPassword);
   }
 
   @Get('username/:user')

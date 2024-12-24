@@ -66,7 +66,7 @@ export class UsuariosService {
       ...updateUsuarioDto,
     });
     if (!usuario) throw new NotFoundException(`Usuario ${id} no encontrado`);
-    //console.log(usuario)
+
     try {
       if (updateUsuarioDto.password == null) {
         delete usuario.password
@@ -90,4 +90,26 @@ export class UsuariosService {
     this.usuarioRepository.remove(usuario)
     return { ...usuario, id };
   }
+
+  async updatePassword(id: string, newPassword: string) {
+    const usuario = await this.usuarioRepository.findOneBy({ id });
+    if (!usuario)
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
+
+    if (!newPassword) {
+      throw new BadRequestException('La nueva contraseña no puede estar vacía');
+    }
+
+    const hashedNewPassword = await this.hashPassword(newPassword);
+    usuario.password = hashedNewPassword;
+
+    try {
+      await this.usuarioRepository.save(usuario);
+      return { message: 'Contraseña actualizada correctamente' };
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException('Error al actualizar la contraseña');
+    }
+  }
+
 }

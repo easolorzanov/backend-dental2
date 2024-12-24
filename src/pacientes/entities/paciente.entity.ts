@@ -1,5 +1,4 @@
 import { Cita } from 'src/citas/entities/cita.entity';
-import { HistorialClinico } from 'src/historial-clinico/entities/historial-clinico.entity';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 
@@ -32,7 +31,4 @@ export class Paciente {
 
     @OneToMany(() => Cita, cita => cita.paciente)
     citas: Cita[];
-
-    @OneToMany(() => HistorialClinico, historial => historial.paciente)
-    historiales: HistorialClinico[];
 }
