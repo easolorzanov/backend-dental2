@@ -75,6 +75,7 @@ export class AuthService {
         "identificacion": data.identificacion,
         "nombre": data.nombre,
         "apellido": data.apellido,
+        "direccion": data.direccion,
         "correo": data.correo,
         "celular": data.celular,
         "usuario": newUser

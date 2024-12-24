@@ -13,11 +13,11 @@ export class Paciente {
 
     @Column('varchar')
     nombre: string;
-  
+
     @Column('varchar')
     apellido: string;
 
-    @Column('varchar', {nullable:true})
+    @Column('varchar', { nullable: true })
     direccion: string;
 
     @Column('varchar')
@@ -25,8 +25,8 @@ export class Paciente {
 
     @Column('varchar')
     celular: string;
-  
-    @OneToOne(() => Usuario, usuario => usuario.dentista, {eager: true})
+
+    @OneToOne(() => Usuario, usuario => usuario.dentista, { eager: true })
     @JoinColumn()
     usuario: Usuario;
 

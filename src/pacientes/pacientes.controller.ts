@@ -5,7 +5,7 @@ import { UpdatePacienteDto } from './dto/update-paciente.dto';
 
 @Controller('pacientes')
 export class PacientesController {
-  constructor(private readonly pacientesService: PacientesService) {}
+  constructor(private readonly pacientesService: PacientesService) { }
 
   @Post()
   create(@Body() createPacienteDto: CreatePacienteDto) {

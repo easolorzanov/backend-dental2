@@ -13,7 +13,7 @@ export class UsuariosService {
   constructor(
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
-  ) {}
+  ) { }
 
   async create(createUsuarioDto: CreateUsuarioDto) {
     try {
@@ -35,13 +35,12 @@ export class UsuariosService {
   }
 
   async findByUsername(username: string) {
-    return await this.usuarioRepository.findOneBy( {username:username});
+    return await this.usuarioRepository.findOneBy({ username: username });
   }
 
   async findById(id: string) {
-    return await this.usuarioRepository.findOneBy( {id:id});
+    return await this.usuarioRepository.findOneBy({ id: id });
   }
-
 
   async findAll() {
     const usuarios = await this.usuarioRepository.find();
@@ -49,8 +48,15 @@ export class UsuariosService {
   }
 
   async findOne(id: string) {
-    const usuario = await this.usuarioRepository.findOneBy({ id });
-    if (!usuario) throw new NotFoundException(`Usuario ${id} no encontrado`);
+    const usuario = await this.usuarioRepository.createQueryBuilder('usuario')
+      .leftJoinAndSelect('usuario.dentista', 'dentista')
+      .leftJoinAndSelect('usuario.paciente', 'paciente')
+      .where('usuario.id = :id', { id })
+      .getOne();
+
+    if (!usuario)
+      throw new NotFoundException(`Usuario ${id} no encontrado`);
+
     return usuario;
   }
 
@@ -62,16 +68,16 @@ export class UsuariosService {
     if (!usuario) throw new NotFoundException(`Usuario ${id} no encontrado`);
     //console.log(usuario)
     try {
-      if(updateUsuarioDto.password==null){
+      if (updateUsuarioDto.password == null) {
         delete usuario.password
         return await this.usuarioRepository.update(id, usuario);
-      }else{
+      } else {
         const hash = await this.hashPassword(usuario.password);
         const user = { ...usuario, password: hash };
         await this.usuarioRepository.update(id, user);
-        return {"message":"Actualizado Correctamente"}
+        return { "message": "Actualizado Correctamente" }
       }
-    
+
 
     } catch (error) {
       console.log(error);
@@ -80,8 +86,8 @@ export class UsuariosService {
   }
 
   async remove(id: string) {
-    const usuario= await  this.findOne(id);
+    const usuario = await this.findOne(id);
     this.usuarioRepository.remove(usuario)
-    return {...usuario, id};
+    return { ...usuario, id };
   }
 }

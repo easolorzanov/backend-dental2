@@ -41,7 +41,6 @@ export class CitasService {
     }
   }
 
-
   async findAll() {
     const citas = await this.citaRepository.find({});
     return citas
@@ -74,6 +73,7 @@ export class CitasService {
       .leftJoinAndSelect('citas.dentista', 'dentista')
       .leftJoinAndSelect('citas.servicios', 'servicio')
       .where('citas.dentista.id = :dentistaId', { dentistaId })
+      .orderBy('citas.fecha', 'ASC')
       .getMany();
     return citasC;
   }
@@ -89,14 +89,20 @@ export class CitasService {
   }
 
   async update(id: string, updateCitaDto: UpdateCitaDto) {
+    const citaExistente = await this.citaRepository.findOne({
+      where: {
+        fecha: updateCitaDto.fecha,
+      },
+    });
+
+    if (citaExistente) throw new BadRequestException('Ya existe una cita agendada para esta fecha y hora');
+
     updateCitaDto.servicios = await this.servicioRepository.find({ where: { id: In(updateCitaDto.servicios) } });
-    console.log(updateCitaDto)
     const cita = await this.citaRepository.preload({
       id: id,
       ...updateCitaDto,
     });
     if (!cita) throw new NotFoundException(`Cita ${id} no encontrada`);
-    //console.log(cita)
     try {
       await this.citaRepository.save(cita);
       return cita;

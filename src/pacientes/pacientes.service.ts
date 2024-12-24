@@ -13,20 +13,20 @@ export class PacientesService {
   constructor(
     @InjectRepository(Paciente)
     private readonly pacienteRepository: Repository<Paciente>,
-  ) {}
+  ) { }
 
 
   async create(createPacienteDto: CreatePacienteDto) {
-    const existePaciente= await this.findCedula(createPacienteDto.identificacion);
-    if(existePaciente){
+    const existePaciente = await this.findCedula(createPacienteDto.identificacion);
+    
+    if (existePaciente)
       throw new BadRequestException("Ya existe el Paciente")
-    }
+    
     try {
       const paciente = this.pacienteRepository.create(createPacienteDto);
       await this.pacienteRepository.save(paciente);
       return paciente;
     } catch (error) {
-      console.log(error);
       if (error.code === '23505') throw new BadRequestException(error.detail);
       this.logger.error(error);
       throw new InternalServerErrorException('Error no esperado');
