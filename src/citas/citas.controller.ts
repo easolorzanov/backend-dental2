@@ -47,8 +47,9 @@ export class CitasController {
     return this.citasService.remove(id);
   }
 
-  @Get('/done/:id')
-  doneCita(@Param('id') id: string) {
-    return this.citasService.doneCita(id);
+  @Patch('/done/:id')
+  doneCita(@Param('id') id: string, @Body() body: { observacion?: string; recomendacion?: string }) {
+    const { observacion, recomendacion } = body
+    return this.citasService.doneCita(id, observacion, recomendacion);
   }
 }

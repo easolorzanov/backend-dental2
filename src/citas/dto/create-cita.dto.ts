@@ -2,15 +2,9 @@ import {
     IsNotEmpty,
     IsNumber,
     IsString,
-    IsOptional,
     Length,
-    Max,
-    IsEmail,
-    IsDate,
-    IsEnum,
-    IsUUID,
     IsDateString,
-    IsArray
+    IsOptional
   } from 'class-validator';
 import { Dentista } from 'src/dentistas/entities/dentista.entity';
 import { Paciente } from 'src/pacientes/entities/paciente.entity';
@@ -45,4 +39,14 @@ export class CreateCitaDto {
     @IsNumber()
     @IsNotEmpty()
     tiempo_total: number;
+
+    @IsString()
+    @Length(1, 1000)
+    @IsOptional()
+    observacion: string;
+
+    @IsString()
+    @Length(1, 1000)
+    @IsOptional()
+    recomendacion: string;
 }

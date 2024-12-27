@@ -128,11 +128,21 @@ export class CitasService {
     }
   }
 
-  async doneCita(id: string) {
-    const cita = await this.citaRepository.findOneBy({ id: id });
-    if (!cita) throw new NotFoundException(`Cita ${id} no encontrada`);
+  async doneCita(id: string, observacion: string, recomendacion: string) {
+    const cita = await this.citaRepository.findOneBy({ id });
+    if (!cita)
+      throw new NotFoundException(`Cita ${id} no encontrada`);
+
+    cita.observacion = observacion;
+    cita.recomendacion = recomendacion;
     cita.estado = 'HECHO';
-    await this.citaRepository.save(cita);
-    return cita;
+
+    try {
+      await this.citaRepository.save(cita);
+      return cita;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException('Error actualizando la cita');
+    }
   }
 }

@@ -14,7 +14,7 @@ export class AuthService {
     private readonly pacientesService: PacientesService,
     private readonly dentistasService: DentistasService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usuarioService.findByUsername(username);
@@ -33,20 +33,22 @@ export class AuthService {
       throw new BadRequestException('No existe el usuario o contraseña incorrecta');
     }
     //console.log(userValid)
-    if(userValid.role.nombre=="ADMINISTRADOR"){
+    if (userValid.role.nombre == "ADMINISTRADOR") {
       //console.log(userValid.id)
       const datos = await this.dentistasService.findOneIdUser(userValid)
       //console.log(datos)
-      const payload = { userId:userValid.id, username: userValid.username, role: userValid.role.nombre, nombre: `${datos.nombre} ${datos.apellido}` , personId: datos.id };
+      const payload = {
+        userId: userValid.id, username: userValid.username, role: userValid.role.nombre, nombre: `${datos.nombre} ${datos.apellido}`, personId: datos.id,
+        especialidad: datos.especialidad
+      };
       return {
         access_token: this.jwtService.sign(payload),
       };
-      
     }
-    if(userValid.role.nombre=="CLIENTE"){
+    if (userValid.role.nombre == "CLIENTE") {
       //console.log(userValid.id)
       const datos = await this.pacientesService.findOneIdUser(userValid)
-      const payload = { userId:userValid.id, username: userValid.username, role: userValid.role.nombre, nombre: `${datos.nombre} ${datos.apellido}` , personId: datos.id  };
+      const payload = { userId: userValid.id, username: userValid.username, role: userValid.role.nombre, nombre: `${datos.nombre} ${datos.apellido}`, personId: datos.id };
       return {
         access_token: this.jwtService.sign(payload),
       };
@@ -54,24 +56,24 @@ export class AuthService {
   }
 
   async register(data: any) {
-    if(data.rol=="CLIENTE"){
-      const existePaciente= await this.pacientesService.findCedula(data.identificacion);
-      if(existePaciente){
+    if (data.rol == "CLIENTE") {
+      const existePaciente = await this.pacientesService.findCedula(data.identificacion);
+      if (existePaciente) {
         throw new BadRequestException("La cedula ya se encuentra registrada")
       }
-      const existeUsername= await this.usuarioService.findByUsername(data.username);
-      if(existeUsername){
+      const existeUsername = await this.usuarioService.findByUsername(data.username);
+      if (existeUsername) {
         throw new BadRequestException("El nombre de usuario ya se encuentra registrado")
       }
-      const rol:any = await this.rolesService.findName(data.rol)
+      const rol: any = await this.rolesService.findName(data.rol)
       //console.log(rol.id)
-      const user={
-        "username":data.username,
-        "password":data.password,
-        "role":rol.id
+      const user = {
+        "username": data.username,
+        "password": data.password,
+        "role": rol.id
       }
       const newUser = await this.usuarioService.create(user);
-      const datosPersonales= {
+      const datosPersonales = {
         "identificacion": data.identificacion,
         "nombre": data.nombre,
         "apellido": data.apellido,
@@ -84,24 +86,24 @@ export class AuthService {
       return registro;
     }
 
-    if(data.rol=="ADMINISTRADOR"){
-      const existeDentista= await this.dentistasService.findCedula(data.identificacion);
-      if(existeDentista){
+    if (data.rol == "ADMINISTRADOR") {
+      const existeDentista = await this.dentistasService.findCedula(data.identificacion);
+      if (existeDentista) {
         throw new BadRequestException("La cedula ya se encuentra registrada")
       }
-      const existeUsername= await this.usuarioService.findByUsername(data.username);
-      if(existeUsername){
+      const existeUsername = await this.usuarioService.findByUsername(data.username);
+      if (existeUsername) {
         throw new BadRequestException("El nombre de usuario ya se encuentra registrado")
       }
-      const rol:any = await this.rolesService.findName(data.rol)
+      const rol: any = await this.rolesService.findName(data.rol)
       //console.log(rol.id)
-      const user={
-        "username":data.username,
-        "password":data.password,
-        "role":rol.id
+      const user = {
+        "username": data.username,
+        "password": data.password,
+        "role": rol.id
       }
       const newUser = await this.usuarioService.create(user);
-      const datosPersonales= {
+      const datosPersonales = {
         "identificacion": data.identificacion,
         "nombre": data.nombre,
         "apellido": data.apellido,
@@ -116,6 +118,6 @@ export class AuthService {
     }
     return new BadRequestException("Rol no existente")
 
-    
+
   }
 }
