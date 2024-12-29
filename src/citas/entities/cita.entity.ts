@@ -31,10 +31,10 @@ export class Cita {
     @Column()
     tiempo_total: number;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, default: 'Sin observaciones' })
     observacion: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, default: 'Sin recomendaciones' })
     recomendacion: string;
 
     //@ManyToOne(() => Servicio, servicios => servicios.citas)

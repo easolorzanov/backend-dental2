@@ -6,6 +6,8 @@ import { In, Repository } from 'typeorm';
 import { Cita } from './entities/cita.entity';
 import { Servicio } from 'src/servicios/entities/servicio.entity';
 
+import { Cron, CronExpression } from '@nestjs/schedule';
+
 @Injectable()
 export class CitasService {
   private readonly logger = new Logger('CitasService');
@@ -16,6 +18,31 @@ export class CitasService {
     @InjectRepository(Servicio)
     private readonly servicioRepository: Repository<Servicio>,
   ) { }
+
+  @Cron('10 * * * *')
+  async actualizarCitasPendientes() {
+    this.logger.debug('Verificando citas con estado PENDIENTE...');
+
+    const ahora = new Date();
+
+    const citasPendientes = await this.citaRepository.find({
+      where: {
+        estado: 'PENDIENTE',
+      },
+    });
+
+    for (const cita of citasPendientes) {
+      const fechaLimite = new Date(cita.fecha);
+      fechaLimite.setMinutes(fechaLimite.getMinutes() + 10);
+      if (ahora >= fechaLimite) {
+        cita.estado = 'NO REALIZADA';
+        cita.observacion = 'NO REALIZADA';
+        cita.recomendacion = 'NO REALIZADA';
+        await this.citaRepository.save(cita);
+        this.logger.log(`Cita ${cita.id} marcada como NO REALIZADA.`);
+      }
+    }
+  }
 
   async create(createCitaDto: CreateCitaDto) {
     const citaExistente = await this.citaRepository
@@ -74,7 +101,7 @@ export class CitasService {
       .leftJoinAndSelect('citas.dentista', 'dentista')
       .leftJoinAndSelect('citas.servicios', 'servicio')
       .where('citas.dentista.id = :dentistaId', { dentistaId })
-      .orderBy('citas.fecha', 'ASC')
+      .orderBy('citas.fecha', 'DESC')
       .getMany();
     return citasC;
   }
