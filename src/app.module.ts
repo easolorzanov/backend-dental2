@@ -10,6 +10,7 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { CitasModule } from './citas/citas.module';
 import { ServiciosModule } from './servicios/servicios.module';
 import { AuthModule } from './auth/auth.module';
+import { ConsultorioModule } from './consultorio/consultorio.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AuthModule } from './auth/auth.module';
     CitasModule,
     ServiciosModule,
     AuthModule,
+    ConsultorioModule,
   ],
   controllers: [AppController],
   providers: [AppService],

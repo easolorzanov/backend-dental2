@@ -13,11 +13,11 @@ export class DentistasService {
   constructor(
     @InjectRepository(Dentista)
     private readonly dentistaRepository: Repository<Dentista>,
-  ) {}
+  ) { }
 
   async create(createDentistaDto: CreateDentistaDto) {
-    const existeDentista= await this.findCedula(createDentistaDto.identificacion);
-    if(existeDentista){
+    const existeDentista = await this.findCedula(createDentistaDto.identificacion);
+    if (existeDentista) {
       throw new BadRequestException("Ya existe el Dentista")
     }
     try {
@@ -78,5 +78,13 @@ export class DentistasService {
       relations: ['usuario'],
     });
     await this.dentistaRepository.remove(dentista);
+  }
+
+  async dentistaByConsultorio(consultorioId: string) {
+    const dentistaConsultorio = await this.dentistaRepository.createQueryBuilder('dentistas')
+      .leftJoinAndSelect('dentistas.consultorio', 'consultorio')
+      .where('dentistas.consultorio.id = :consultorioId', { consultorioId })
+      .getMany();
+    return dentistaConsultorio;
   }
 }

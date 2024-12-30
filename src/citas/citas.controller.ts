@@ -52,4 +52,9 @@ export class CitasController {
     const { observacion, recomendacion } = body
     return this.citasService.doneCita(id, observacion, recomendacion);
   }
+
+  @Get('paciente/:id')
+  findLastByPaciente(@Param('id') id: string) {
+    return this.citasService.findLastByPaciente(id);
+  }
 }

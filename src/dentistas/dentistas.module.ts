@@ -3,13 +3,17 @@ import { DentistasService } from './dentistas.service';
 import { DentistasController } from './dentistas.controller';
 import { Dentista } from './entities/dentista.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Consultorio } from 'src/consultorio/entities/consultorio.entity';
 
 @Module({
+  imports: [TypeOrmModule.forFeature([
+    Dentista, Consultorio
+  ])],
+  
   controllers: [DentistasController],
   providers: [DentistasService],
-  imports:[ TypeOrmModule.forFeature([
-    Dentista
-  ]) ],
+
   exports: [DentistasService]
 })
-export class DentistasModule {}
+
+export class DentistasModule { }

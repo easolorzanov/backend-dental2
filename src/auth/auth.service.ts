@@ -32,14 +32,13 @@ export class AuthService {
     if (!userValid) {
       throw new BadRequestException('No existe el usuario o contraseña incorrecta');
     }
-    //console.log(userValid)
     if (userValid.role.nombre == "ADMINISTRADOR") {
       //console.log(userValid.id)
       const datos = await this.dentistasService.findOneIdUser(userValid)
       //console.log(datos)
       const payload = {
         userId: userValid.id, username: userValid.username, role: userValid.role.nombre, nombre: `${datos.nombre} ${datos.apellido}`, personId: datos.id,
-        especialidad: datos.especialidad
+        especialidad: datos.especialidad, consultorio: datos.consultorio.id
       };
       return {
         access_token: this.jwtService.sign(payload),

@@ -106,6 +106,21 @@ export class CitasService {
     return citasC;
   }
 
+  async findLastByPaciente(pacienteId: string) {
+    const currentDate = new Date();
+    const startOfDay = new Date(currentDate.setHours(0, 0, 0, 0)); // Inicio del día
+    const endOfDay = new Date(currentDate.setHours(23, 59, 59, 999)); // Fin del día
+
+    const lastCita = await this.citaRepository.createQueryBuilder('citas')
+      .leftJoinAndSelect('citas.paciente', 'paciente')
+      .where('citas.paciente.id = :pacienteId', { pacienteId })
+      .andWhere('citas.fecha BETWEEN :startOfDay AND :endOfDay', { startOfDay, endOfDay })
+      .getMany();
+
+    return lastCita;
+  }
+
+
   async findOne(id: string) {
     const citasC = await this.citaRepository.createQueryBuilder('citas')
       .leftJoinAndSelect('citas.paciente', 'paciente')

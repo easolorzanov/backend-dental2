@@ -1,6 +1,7 @@
 import { IsString, IsUUID, IsEmail, ValidateNested,IsNotEmpty, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
+import { Consultorio } from 'src/consultorio/entities/consultorio.entity';
 
 export class CreateDentistaDto {
     @IsString()
@@ -34,4 +35,8 @@ export class CreateDentistaDto {
     @IsNotEmpty()
     @Type(() => Usuario)
     usuario: Usuario;
+
+    @IsOptional()
+    @Type(() => Consultorio)
+    consultorio?: Consultorio;
 }

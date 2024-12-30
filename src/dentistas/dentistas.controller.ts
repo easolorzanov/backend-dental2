@@ -31,4 +31,9 @@ export class DentistasController {
   remove(@Param('id') id: string) {
     return this.dentistasService.remove(id);
   }
+
+  @Get('consultorio/:id')
+  dentistaByConsultorio(@Param('id') consultorioId: string) {
+    return this.dentistasService.dentistaByConsultorio(consultorioId);
+  }
 }
