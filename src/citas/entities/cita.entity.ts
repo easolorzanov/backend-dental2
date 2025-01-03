@@ -15,7 +15,7 @@ export class Cita {
     @Column('varchar')
     estado: string;
 
-    @ManyToOne(() => Paciente, paciente => paciente.citas)
+    @ManyToOne(() => Paciente, paciente => paciente.citas, { eager: true })
     paciente: Paciente;
 
     @ManyToOne(() => Dentista, dentista => dentista.citas)
@@ -36,6 +36,9 @@ export class Cita {
 
     @Column({ nullable: true, default: 'Sin recomendaciones' })
     recomendacion: string;
+
+    @Column({default: false})
+    status: boolean
 
     //@ManyToOne(() => Servicio, servicios => servicios.citas)
     //@JoinTable()

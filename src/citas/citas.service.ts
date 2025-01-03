@@ -2,11 +2,12 @@ import { BadRequestException, Injectable, InternalServerErrorException, Logger, 
 import { CreateCitaDto } from './dto/create-cita.dto';
 import { UpdateCitaDto } from './dto/update-cita.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Between, In, Repository } from 'typeorm';
 import { Cita } from './entities/cita.entity';
 import { Servicio } from 'src/servicios/entities/servicio.entity';
 
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class CitasService {
@@ -17,6 +18,7 @@ export class CitasService {
     private readonly citaRepository: Repository<Cita>,
     @InjectRepository(Servicio)
     private readonly servicioRepository: Repository<Servicio>,
+    private readonly mailerService: MailerService,
   ) { }
 
   @Cron('10 * * * *')
@@ -41,6 +43,54 @@ export class CitasService {
         await this.citaRepository.save(cita);
         this.logger.log(`Cita ${cita.id} marcada como NO REALIZADA.`);
       }
+    }
+  }
+
+  @Cron('* 8 * * *')
+  //@Cron('*/1 * * * *')
+  async verificarCitas() {
+    this.logger.debug('Ejecutando tarea Cron para verificar citas...');
+
+    const hoy = new Date();
+    const inicioManana = new Date(hoy);
+    inicioManana.setDate(hoy.getDate() + 1);
+    inicioManana.setHours(7, 0, 0, 0);
+
+    const finManana = new Date(inicioManana);
+    finManana.setHours(19, 0, 0, 0);
+
+    try {
+      const citasNext = await this.citaRepository
+        .createQueryBuilder('citas')
+        .leftJoinAndSelect('citas.paciente', 'paciente')
+        .where('citas.fecha BETWEEN :inicio AND :fin', {
+          inicio: inicioManana,
+          fin: finManana,
+        })
+        .getMany();
+
+      const usuarios = citasNext.map((cita) => cita)//.paciente.correo);
+      for (const usuario of usuarios) {
+        const fechaFormateada = new Date(usuario.fecha).toLocaleString('es-ES', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+
+        await this.mailerService.sendMail({
+          to: usuario.paciente.correo,
+          subject: 'Recordatorio de Cita',
+          text: `
+            Estimad@ ${usuario.paciente.apellido} ${usuario.paciente.nombre} este es un recordatorio de que tiene una cita programada para el dia de mañana ${fechaFormateada}. Por favor, no falte.
+          `,
+        });
+        this.logger.log(`Correo enviado a: ${usuario.paciente.correo}`);
+      }
+      return 'ok';
+    } catch (error) {
+      this.logger.error('Error al verificar citas:', error.message);
     }
   }
 
@@ -108,18 +158,17 @@ export class CitasService {
 
   async findLastByPaciente(pacienteId: string) {
     const currentDate = new Date();
-    const startOfDay = new Date(currentDate.setHours(0, 0, 0, 0)); // Inicio del día
-    const endOfDay = new Date(currentDate.setHours(23, 59, 59, 999)); // Fin del día
+    const startOfDay = new Date(currentDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(currentDate.setHours(23, 59, 59, 999));
 
     const lastCita = await this.citaRepository.createQueryBuilder('citas')
       .leftJoinAndSelect('citas.paciente', 'paciente')
       .where('citas.paciente.id = :pacienteId', { pacienteId })
       .andWhere('citas.fecha BETWEEN :startOfDay AND :endOfDay', { startOfDay, endOfDay })
-      .getMany();
+      .getOne();
 
     return lastCita;
   }
-
 
   async findOne(id: string) {
     const citasC = await this.citaRepository.createQueryBuilder('citas')
