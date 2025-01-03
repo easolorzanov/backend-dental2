@@ -2,12 +2,13 @@ import { BadRequestException, Injectable, InternalServerErrorException, Logger, 
 import { CreateCitaDto } from './dto/create-cita.dto';
 import { UpdateCitaDto } from './dto/update-cita.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, In, Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Cita } from './entities/cita.entity';
 import { Servicio } from 'src/servicios/entities/servicio.entity';
 
 import { Cron } from '@nestjs/schedule';
 import { MailerService } from '@nestjs-modules/mailer';
+import { Paciente } from 'src/pacientes/entities/paciente.entity';
 
 @Injectable()
 export class CitasService {
@@ -18,6 +19,10 @@ export class CitasService {
     private readonly citaRepository: Repository<Cita>,
     @InjectRepository(Servicio)
     private readonly servicioRepository: Repository<Servicio>,
+
+    @InjectRepository(Paciente)
+    private readonly pacienteRepository: Repository<Paciente>,
+
     private readonly mailerService: MailerService,
   ) { }
 
@@ -105,6 +110,21 @@ export class CitasService {
       throw new BadRequestException('Ya existe una cita agendada para esta fecha y hora');
 
     createCitaDto.servicios = await this.servicioRepository.find({ where: { id: In(createCitaDto.servicios) } });
+
+    const pacienteCero = await this.pacienteRepository.findOneBy({id: createCitaDto.paciente.id})
+
+    const fechaFormateada = new Date(createCitaDto.fecha).toLocaleString('es-ES', {
+      year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
+    });
+
+    await this.mailerService.sendMail({
+      to: pacienteCero.correo,
+      subject: 'Recordatorio de Cita',
+      text: `
+        Estimad@ ${pacienteCero.apellido} ${pacienteCero.nombre} este es un recordatorio de que usted acaba de agendar una cita con su dentista de confianza por concepto de ${createCitaDto.servicios[0].nombre} para el dia ${fechaFormateada}. Por favor, no falte.
+      `,
+    });
+    this.logger.log(`Correo enviado a: ${pacienteCero.correo}`);
 
     try {
       const servicio = this.citaRepository.create(createCitaDto);
@@ -209,6 +229,30 @@ export class CitasService {
       where: { id: id },
       relations: ['servicios'],
     });
+
+    const fechaFormateada = new Date(cita.fecha).toLocaleString('es-ES', {
+      year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
+    });
+
+    await this.mailerService.sendMail({
+      to: cita.paciente.correo,
+      subject: 'Cita cancelada',
+      text: `
+        Estimad@ ${cita.paciente.apellido} ${cita.paciente.nombre} usted ha eliminado una cita programada para el dia${fechaFormateada}, con su ${cita.dentista.especialidad} ${cita.dentista.apellido} ${cita.dentista.nombre}.
+      `,
+    });
+    this.logger.log(`Correo enviado a: ${cita.paciente.correo}`);
+
+    await this.mailerService.sendMail({
+      to: cita.dentista.correo,
+      subject: 'Cita cancelada',
+      text: `
+        Estimad@ ${cita.dentista.apellido} ${cita.dentista.nombre}, el paciente ${cita.paciente.apellido} ${cita.paciente.nombre} ha eliminado una cita programada para el dia ${fechaFormateada}.
+      `,
+    });
+    this.logger.log(`Correo enviado a: ${cita.dentista.correo}`);
+
+
     if (cita) {
       cita.servicios = [];
       await this.citaRepository.save(cita);

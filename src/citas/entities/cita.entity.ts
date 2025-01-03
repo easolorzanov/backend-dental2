@@ -18,7 +18,7 @@ export class Cita {
     @ManyToOne(() => Paciente, paciente => paciente.citas, { eager: true })
     paciente: Paciente;
 
-    @ManyToOne(() => Dentista, dentista => dentista.citas)
+    @ManyToOne(() => Dentista, dentista => dentista.citas, {eager: true})
     dentista: Dentista;
 
     @ManyToMany(() => Servicio, servicios => servicios.citas, { eager: true })

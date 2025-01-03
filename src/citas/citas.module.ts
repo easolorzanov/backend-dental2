@@ -7,12 +7,13 @@ import { Servicio } from 'src/servicios/entities/servicio.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Paciente } from 'src/pacientes/entities/paciente.entity';
 
 @Module({
   controllers: [CitasController],
   providers: [CitasService],
   imports: [
-    TypeOrmModule.forFeature([Cita, Servicio]),
+    TypeOrmModule.forFeature([Cita, Servicio, Paciente]),
     ScheduleModule.forRoot(),
     ConfigModule,
     MailerModule.forRootAsync({
