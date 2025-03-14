@@ -15,9 +15,6 @@ export class Servicio {
   
     @Column({type: "decimal", precision: 10, scale: 2, default: 0})
     precio: number;
-  
-    @Column()
-    duracion: number;
     
     @ManyToMany(() => Cita, citas => citas.servicios)
     citas: Cita[];

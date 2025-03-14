@@ -28,17 +28,12 @@ export class CreateCitaDto {
     @IsNotEmpty()
     dentista: Dentista;
 
-  
     @IsNotEmpty()
     servicios: Servicio[];
 
     @IsNumber()
     @IsNotEmpty()
     total_pagar: number;
-
-    @IsNumber()
-    @IsNotEmpty()
-    tiempo_total: number;
 
     @IsString()
     @Length(1, 1000)

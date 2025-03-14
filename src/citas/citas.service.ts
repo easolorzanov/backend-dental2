@@ -150,6 +150,7 @@ export class CitasService {
       .leftJoinAndSelect('citas.dentista', 'dentista')
       .leftJoinAndSelect('citas.servicios', 'servicio')
       .where('citas.paciente.id = :pacienteId', { pacienteId })
+      .andWhere('citas.status = :status', { status: false })
       .getMany();
     return citasC;
   }
@@ -161,6 +162,7 @@ export class CitasService {
       .leftJoinAndSelect('citas.servicios', 'servicio')
       .where('citas.dentista.id = :dentistaId', { dentistaId })
       .andWhere('citas.estado = :estado', { estado: 'PENDIENTE' })
+      .andWhere('citas.status = :status', { status: false })
       .getMany();
     return citasC;
   }
@@ -252,12 +254,10 @@ export class CitasService {
     });
     this.logger.log(`Correo enviado a: ${cita.dentista.correo}`);
 
-
     if (cita) {
-      cita.servicios = [];
+      cita.status = true;
+      cita.estado = 'NO REALIZADA'
       await this.citaRepository.save(cita);
-
-      await this.citaRepository.remove(cita);
     } else {
       throw new Error('Cita no encontrada');
     }

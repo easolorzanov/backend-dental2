@@ -12,8 +12,4 @@ export class CreateServicioDto {
     @IsNotEmpty()
     @IsNumber()
     precio: number;
-  
-    @IsNotEmpty()
-    @IsNumber()
-    duracion: number;
 }
