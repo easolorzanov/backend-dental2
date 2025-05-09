@@ -1,8 +1,8 @@
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany,OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 
-@Entity()
+@Entity({ name: 'dtt_role'})
 export class Role {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -12,7 +12,6 @@ export class Role {
 
   @Column('varchar')
   descripcion: string;
-
 
   @OneToMany(() => Usuario, usuario => usuario.role)
   usuarios: Usuario[];

@@ -18,10 +18,9 @@ export class PacientesService {
 
   async create(createPacienteDto: CreatePacienteDto) {
     const existePaciente = await this.findCedula(createPacienteDto.identificacion);
-    
-    if (existePaciente)
-      throw new BadRequestException("Ya existe el Paciente")
-    
+
+    if (existePaciente) throw new BadRequestException("Ya existe el Paciente")
+
     try {
       const paciente = this.pacienteRepository.create(createPacienteDto);
       await this.pacienteRepository.save(paciente);
@@ -33,11 +32,6 @@ export class PacientesService {
     }
   }
 
-  async findAll() {
-    const pacientes = await this.pacienteRepository.find({});
-    return pacientes
-  }
-
   async findOne(id: string) {
     const paciente = await this.pacienteRepository.findOneBy({ id });
     if (!paciente) throw new NotFoundException(`Paciente ${id} no encontrado`);
@@ -45,9 +39,7 @@ export class PacientesService {
   }
 
   async findCedula(identificacion: string) {
-    const paciente = await this.pacienteRepository.findOneBy({ identificacion });
-    //if (!paciente) throw new NotFoundException(`Paciente ${identificacion} no encontrado`);
-    return paciente;
+    return await this.pacienteRepository.findOneBy({ identificacion });
   }
 
   async findOneIdUser(usuario: Usuario) {
@@ -67,7 +59,6 @@ export class PacientesService {
       await this.pacienteRepository.save(paciente);
       return paciente;
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error.detail);
     }
   }
@@ -75,5 +66,12 @@ export class PacientesService {
   async remove(id: string) {
     const paciente = await this.findOne(id);
     await this.pacienteRepository.remove(paciente);
+  }
+
+  async getPacientePorConsultorio(consultorioId: string) {
+    return await this.pacienteRepository.createQueryBuilder('paciente')
+      .leftJoinAndSelect('paciente.consultorio', 'consultorio')
+      .where('paciente.consultorio.id = :consultorioId', { consultorioId })
+      .getMany();
   }
 }

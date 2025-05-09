@@ -12,43 +12,34 @@ export class ServiciosService {
   constructor(
     @InjectRepository(Servicio)
     private readonly servicioRepository: Repository<Servicio>,
-  ) {}
+  ) { }
 
   async create(createServicioDto: CreateServicioDto) {
-    const existeDentista= await this.findNombre(createServicioDto.nombre);
-    if(existeDentista){
-      throw new BadRequestException("Ya existe el Servicio")
-    }
+    const existeDentista = await this.findNombre(createServicioDto.nombre);
+    
+    if (existeDentista) throw new BadRequestException("Ya existe el Servicio")
+
     try {
       const servicio = this.servicioRepository.create(createServicioDto);
       await this.servicioRepository.save(servicio);
       return servicio;
     } catch (error) {
-      console.log(error);
       if (error.code === '23505') throw new BadRequestException(error.detail);
       this.logger.error(error);
       throw new InternalServerErrorException('Error no esperado');
     }
   }
 
-  async findNombre(nombre: string) {
-    const servicio = await this.servicioRepository.findOneBy({ nombre });
-    //if (!paciente) throw new NotFoundException(`Paciente ${identificacion} no encontrado`);
-    return servicio;
-  }
-
-  async findAll() {
-    const servicios = await this.servicioRepository.find({});
-    return servicios
-  }
-
-  async findOne(id: string) {
-    const servicio = await this.servicioRepository.findOneBy({ id });
-    if (!servicio) throw new NotFoundException(`Servicio ${id} no encontrado`);
-    return servicio;
+  async findAll(consultorioId: string) {
+    const citasC = await this.servicioRepository.createQueryBuilder('servicio')
+      .leftJoinAndSelect('servicio.consultorio', 'consultorio')
+      .where('servicio.consultorio.id = :consultorioId', { consultorioId })
+      .getMany();
+    return citasC;
   }
 
   async update(id: string, updateServicioDto: UpdateServicioDto) {
+    
     const servicio = await this.servicioRepository.preload({
       id: id,
       ...updateServicioDto,
@@ -59,16 +50,19 @@ export class ServiciosService {
       await this.servicioRepository.save(servicio);
       return servicio;
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error.detail);
     }
   }
 
   async remove(id: string) {
-     //const dentista = await this.findOne(id);
-     const servicio = await this.servicioRepository.findOne({
+    const servicio = await this.servicioRepository.findOne({
       where: { id: id },
     });
     await this.servicioRepository.remove(servicio);
   }
+
+  private async findNombre(nombre: string) {
+    return await this.servicioRepository.findOneBy({ nombre });
+  }
+
 }

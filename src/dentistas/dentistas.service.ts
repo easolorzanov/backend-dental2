@@ -25,7 +25,6 @@ export class DentistasService {
       await this.dentistaRepository.save(dentista);
       return dentista;
     } catch (error) {
-      console.log(error);
       if (error.code === '23505') throw new BadRequestException(error.detail);
       this.logger.error(error);
       throw new InternalServerErrorException('Error no esperado');
@@ -33,14 +32,7 @@ export class DentistasService {
   }
 
   async findCedula(identificacion: string) {
-    const cedula = await this.dentistaRepository.findOneBy({ identificacion });
-    //if (!paciente) throw new NotFoundException(`Paciente ${identificacion} no encontrado`);
-    return cedula;
-  }
-
-  async findAll() {
-    const dentistas = await this.dentistaRepository.find({});
-    return dentistas
+    return await this.dentistaRepository.findOneBy({ identificacion });
   }
 
   async findOne(id: string) {
@@ -66,13 +58,11 @@ export class DentistasService {
       await this.dentistaRepository.save(dentista);
       return dentista;
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error.detail);
     }
   }
 
   async remove(id: string) {
-    //const dentista = await this.findOne(id);
     const dentista = await this.dentistaRepository.findOne({
       where: { id: id },
       relations: ['usuario'],
@@ -87,4 +77,5 @@ export class DentistasService {
       .getMany();
     return dentistaConsultorio;
   }
+
 }

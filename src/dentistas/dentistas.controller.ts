@@ -3,18 +3,13 @@ import { DentistasService } from './dentistas.service';
 import { CreateDentistaDto } from './dto/create-dentista.dto';
 import { UpdateDentistaDto } from './dto/update-dentista.dto';
 
-@Controller('dentistas')
+@Controller('dentista')
 export class DentistasController {
-  constructor(private readonly dentistasService: DentistasService) {}
+  constructor(private readonly dentistasService: DentistasService) { }
 
   @Post()
   create(@Body() createDentistaDto: CreateDentistaDto) {
     return this.dentistasService.create(createDentistaDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.dentistasService.findAll();
   }
 
   @Get(':id')

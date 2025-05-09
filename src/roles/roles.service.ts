@@ -12,19 +12,17 @@ export class RolesService {
   constructor(
     @InjectRepository(Role)
     private readonly rolesRepository: Repository<Role>,
-  ) {}
+  ) { }
 
   async findName(nombre: string) {
-    const rol = await this.rolesRepository.findOneBy({ nombre });
-    return rol;
+    return await this.rolesRepository.findOneBy({ nombre });
   }
 
   async create(createRoleDto: CreateRoleDto) {
-    const rolExistente= await this.findName(createRoleDto.nombre);
-    if(rolExistente){
-      throw new BadRequestException("Ya existe el Rol")
-    }
+    const rolExistente = await this.findName(createRoleDto.nombre);
     
+    if (rolExistente) throw new BadRequestException("Ya existe el Rol")
+
     try {
       const role = this.rolesRepository.create(createRoleDto);
       await this.rolesRepository.save(role);
@@ -37,8 +35,7 @@ export class RolesService {
   }
 
   async findAll() {
-    const roles = await this.rolesRepository.find();
-    return roles
+    return await this.rolesRepository.find();
   }
 
   async findOne(id: string) {
@@ -46,7 +43,6 @@ export class RolesService {
     if (!role) throw new NotFoundException(`Rol ${id} no encontrado`);
     return role;
   }
-
 
   async update(id: string, updateRoleDto: UpdateRoleDto) {
     const role = await this.rolesRepository.preload({
@@ -56,19 +52,17 @@ export class RolesService {
     if (!role) throw new NotFoundException(`Rol ${id} no encontrado`);
 
     try {
-
       await this.rolesRepository.save(role);
       return role;
-
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error.detail);
     }
   }
 
   async remove(id: string) {
-    const role= await  this.findOne(id);
+    const role = await this.findOne(id);
     this.rolesRepository.remove(role)
-    return {...role, id};
+    return { ...role, id };
   }
+
 }

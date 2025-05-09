@@ -1,15 +1,19 @@
-import { IsNotEmpty, IsNumber, IsString, IsOptional,Length, Max,IsEmail,Min ,IsDateString} from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { Consultorio } from "src/consultorio/entities/consultorio.entity";
 
 export class CreateServicioDto {
     @IsNotEmpty()
     @IsString()
     nombre: string;
-  
+
     @IsNotEmpty()
     @IsString()
     descripcion: string;
-  
+
     @IsNotEmpty()
     @IsNumber()
     precio: number;
+
+    @IsString()
+    consultorio?: Consultorio;
 }

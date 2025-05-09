@@ -3,18 +3,13 @@ import { CitasService } from './citas.service';
 import { CreateCitaDto } from './dto/create-cita.dto';
 import { UpdateCitaDto } from './dto/update-cita.dto';
 
-@Controller('citas')
+@Controller('cita')
 export class CitasController {
   constructor(private readonly citasService: CitasService) { }
 
   @Post()
   create(@Body() createCitaDto: CreateCitaDto) {
     return this.citasService.create(createCitaDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.citasService.findAll();
   }
 
   @Get(':id')
@@ -24,17 +19,12 @@ export class CitasController {
 
   @Get('dentistaId/:id')
   findByDentista(@Param('id') id: string) {
-    return this.citasService.findByDentista(id);
-  }
-
-  @Get('dentistaId2/:id')
-  findByDentista2(@Param('id') id: string) {
-    return this.citasService.findByDentista2(id);
+    return this.citasService.findAllByDentista(id);
   }
 
   @Get('pacienteId/:id')
   findByPaciente(@Param('id') id: string) {
-    return this.citasService.findByPaciente(id);
+    return this.citasService.findAllByPaciente(id);
   }
 
   @Patch(':id')
@@ -53,7 +43,12 @@ export class CitasController {
     return this.citasService.doneCita(id, observacion, recomendacion);
   }
 
-  @Get('paciente/:id')
+  @Get('historico-dentista/:id')
+  findHistoricDentista(@Param('id') id: string) {
+    return this.citasService.findHistoricoDentista(id);
+  }
+
+  @Get('last-paciente/:id')
   findLastByPaciente(@Param('id') id: string) {
     return this.citasService.findLastByPaciente(id);
   }

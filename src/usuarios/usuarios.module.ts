@@ -7,9 +7,10 @@ import { Usuario } from './entities/usuario.entity';
 @Module({
   controllers: [UsuariosController],
   providers: [UsuariosService],
-  imports:[ TypeOrmModule.forFeature([
+  imports: [TypeOrmModule.forFeature([
     Usuario
-  ]) ],
+  ])],
   exports: [UsuariosService]
 })
-export class UsuariosModule {}
+
+export class UsuariosModule { }

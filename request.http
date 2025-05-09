@@ -1,0 +1,34 @@
+POST DE ROL: http://localhost:3000/api/rol
+{
+    nombre: "ADMINISTRADOR",
+    descripcion: "Administrador del sistema"
+}
+
+
+POST DE CONSULTORIO: http://localhost:3000/api/consultorio
+{
+  "nombreConsultorio": "Consultorio AYAYAY",
+  "direccionConsultorio": "Manta, a lado de una casa"
+}
+
+
+POST DE USUARIO ADMINISTRADOR: http://localhost:3000/api/usuario
+{
+  "username": "adminuser",
+  "password": "password",
+  "role": "id_user_ADMINISTRADOR"
+}
+
+
+POST DE DATOS DEL USER ADMIN: http://localhost:3000/api/dentista
+{
+  "identificacion": "1315402671",
+  "nombre": "Maicol",
+  "apellido": "Michael",
+  "especialidad": "Dentista",
+  "direccion": "Avenida siempre viva",
+  "correo": "correodepruebas@gmail.com",
+  "celular": "0989135077",
+  "usuario": "id_user_ADMINISTRADOR",
+  "consultorio": "id_CONSULTORIO"
+}

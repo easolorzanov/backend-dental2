@@ -41,4 +41,5 @@ import { ConsultorioModule } from './consultorio/consultorio.module';
   controllers: [AppController],
   providers: [AppService],
 })
+
 export class AppModule { }

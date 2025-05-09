@@ -15,13 +15,11 @@ export class CitasService {
   private readonly logger = new Logger('CitasService');
 
   constructor(
-    @InjectRepository(Cita)
-    private readonly citaRepository: Repository<Cita>,
-    @InjectRepository(Servicio)
-    private readonly servicioRepository: Repository<Servicio>,
+    @InjectRepository(Cita) private readonly citaRepository: Repository<Cita>,
 
-    @InjectRepository(Paciente)
-    private readonly pacienteRepository: Repository<Paciente>,
+    @InjectRepository(Servicio) private readonly servicioRepository: Repository<Servicio>,
+
+    @InjectRepository(Paciente) private readonly pacienteRepository: Repository<Paciente>,
 
     private readonly mailerService: MailerService,
   ) { }
@@ -111,7 +109,7 @@ export class CitasService {
 
     createCitaDto.servicios = await this.servicioRepository.find({ where: { id: In(createCitaDto.servicios) } });
 
-    const pacienteCero = await this.pacienteRepository.findOneBy({id: createCitaDto.paciente.id})
+    const pacienteCero = await this.pacienteRepository.findOneBy({ id: createCitaDto.paciente.id })
 
     const fechaFormateada = new Date(createCitaDto.fecha).toLocaleString('es-ES', {
       year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
@@ -124,6 +122,7 @@ export class CitasService {
         Estimad@ ${pacienteCero.apellido} ${pacienteCero.nombre} este es un recordatorio de que usted acaba de agendar una cita con su dentista de confianza por concepto de ${createCitaDto.servicios[0].nombre} para el dia ${fechaFormateada}. Por favor, no falte.
       `,
     });
+
     this.logger.log(`Correo enviado a: ${pacienteCero.correo}`);
 
     try {
@@ -140,11 +139,10 @@ export class CitasService {
   }
 
   async findAll() {
-    const citas = await this.citaRepository.find({});
-    return citas
+    return await this.citaRepository.find({});
   }
 
-  async findByPaciente(pacienteId: string) {
+  async findAllByPaciente(pacienteId: string) {
     const citasC = await this.citaRepository.createQueryBuilder('citas')
       .leftJoinAndSelect('citas.paciente', 'paciente')
       .leftJoinAndSelect('citas.dentista', 'dentista')
@@ -155,7 +153,7 @@ export class CitasService {
     return citasC;
   }
 
-  async findByDentista(dentistaId: string) {
+  async findAllByDentista(dentistaId: string) {
     const citasC = await this.citaRepository.createQueryBuilder('citas')
       .leftJoinAndSelect('citas.paciente', 'paciente')
       .leftJoinAndSelect('citas.dentista', 'dentista')
@@ -167,7 +165,7 @@ export class CitasService {
     return citasC;
   }
 
-  async findByDentista2(dentistaId: string) {
+  async findHistoricoDentista(dentistaId: string) {
     const citasC = await this.citaRepository.createQueryBuilder('citas')
       .leftJoinAndSelect('citas.paciente', 'paciente')
       .leftJoinAndSelect('citas.dentista', 'dentista')
@@ -221,7 +219,6 @@ export class CitasService {
       await this.citaRepository.save(cita);
       return cita;
     } catch (error) {
-      console.log(error);
       throw new BadRequestException(error.detail);
     }
   }

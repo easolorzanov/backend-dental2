@@ -21,7 +21,7 @@ import { Paciente } from 'src/pacientes/entities/paciente.entity';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         transport: {
-          host:  'smtp.gmail.com',
+          host: 'smtp.gmail.com',
           port: 587,
           secure: false,
           auth: {
@@ -36,4 +36,5 @@ import { Paciente } from 'src/pacientes/entities/paciente.entity';
     })
   ],
 })
+
 export class CitasModule { }

@@ -1,9 +1,7 @@
-import { IsString, IsNotEmpty, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
-import { Usuario } from "src/usuarios/entities/usuario.entity";
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreateRoleDto {
-  
+
     @IsString()
     @IsNotEmpty()
     nombre: string;
@@ -11,6 +9,5 @@ export class CreateRoleDto {
     @IsString()
     @IsNotEmpty()
     descripcion: string;
-  
 
 }

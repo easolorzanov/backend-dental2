@@ -1,10 +1,10 @@
 import { Dentista } from 'src/dentistas/entities/dentista.entity';
 import { Paciente } from 'src/pacientes/entities/paciente.entity';
 import { Servicio } from 'src/servicios/entities/servicio.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 
 
-@Entity()
+@Entity({ name: 'dtt_cita' })
 export class Cita {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -18,7 +18,7 @@ export class Cita {
     @ManyToOne(() => Paciente, paciente => paciente.citas, { eager: true })
     paciente: Paciente;
 
-    @ManyToOne(() => Dentista, dentista => dentista.citas, {eager: true})
+    @ManyToOne(() => Dentista, dentista => dentista.citas, { eager: true })
     dentista: Dentista;
 
     @ManyToMany(() => Servicio, servicios => servicios.citas, { eager: true })
@@ -34,10 +34,6 @@ export class Cita {
     @Column({ nullable: true, default: 'Sin recomendaciones' })
     recomendacion: string;
 
-    @Column({default: false})
+    @Column({ default: false })
     status: boolean
-
-    //@ManyToOne(() => Servicio, servicios => servicios.citas)
-    //@JoinTable()
-    //servicios: Servicio[];
 }

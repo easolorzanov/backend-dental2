@@ -22,7 +22,6 @@ export class UsuariosService {
       await this.usuarioRepository.save(usuario);
       return usuario;
     } catch (error) {
-      //console.log(error);
       if (error.code === '23505') throw new BadRequestException(error.detail);
       this.logger.error(error);
       throw new InternalServerErrorException('Error no esperado');
@@ -43,8 +42,7 @@ export class UsuariosService {
   }
 
   async findAll() {
-    const usuarios = await this.usuarioRepository.find();
-    return usuarios
+    return await this.usuarioRepository.find();
   }
 
   async findOne(id: string) {
@@ -77,8 +75,6 @@ export class UsuariosService {
         await this.usuarioRepository.update(id, user);
         return { "message": "Actualizado Correctamente" }
       }
-
-
     } catch (error) {
       console.log(error);
       throw new BadRequestException(error.detail);

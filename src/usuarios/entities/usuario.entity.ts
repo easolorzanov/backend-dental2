@@ -1,10 +1,9 @@
 import { Dentista } from 'src/dentistas/entities/dentista.entity';
 import { Paciente } from 'src/pacientes/entities/paciente.entity';
 import { Role } from 'src/roles/entities/role.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToOne, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, ManyToOne, JoinColumn } from 'typeorm';
 
-
-@Entity()
+@Entity({ name: 'dtt_user' })
 export class Usuario {
   @PrimaryGeneratedColumn('uuid')
   id: string;

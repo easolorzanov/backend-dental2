@@ -1,8 +1,9 @@
 import { Cita } from 'src/citas/entities/cita.entity';
+import { Consultorio } from 'src/consultorio/entities/consultorio.entity';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany, ManyToOne } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'dtt_paciente' })
 export class Paciente {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -31,4 +32,7 @@ export class Paciente {
 
     @OneToMany(() => Cita, cita => cita.paciente)
     citas: Cita[];
+
+    @ManyToOne(() => Consultorio, (consultorio) => consultorio.id, { eager: true })
+    consultorio: Consultorio;
 }

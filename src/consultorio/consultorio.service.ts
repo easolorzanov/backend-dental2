@@ -10,8 +10,7 @@ export class ConsultorioService {
 
   constructor(
     @InjectRepository(Consultorio) private readonly consultorioRepository: Repository<Consultorio>
-  )
-  {}
+  ) { }
 
   async create(createConsultorioDto: CreateConsultorioDto) {
     return await this.consultorioRepository.save(createConsultorioDto)
@@ -32,4 +31,5 @@ export class ConsultorioService {
   remove(id: number) {
     return `This action removes a #${id} consultorio`;
   }
+
 }

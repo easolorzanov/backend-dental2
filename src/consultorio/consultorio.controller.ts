@@ -5,7 +5,7 @@ import { UpdateConsultorioDto } from './dto/update-consultorio.dto';
 
 @Controller('consultorio')
 export class ConsultorioController {
-  constructor(private readonly consultorioService: ConsultorioService) {}
+  constructor(private readonly consultorioService: ConsultorioService) { }
 
   @Post()
   create(@Body() createConsultorioDto: CreateConsultorioDto) {
@@ -31,4 +31,5 @@ export class ConsultorioController {
   remove(@Param('id') id: string) {
     return this.consultorioService.remove(+id);
   }
+  
 }

@@ -1,24 +1,24 @@
 import { Cita } from 'src/citas/entities/cita.entity';
-import { Usuario } from 'src/usuarios/entities/usuario.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany } from 'typeorm';
+import { Consultorio } from 'src/consultorio/entities/consultorio.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'dtt_servicio' })
 export class Servicio {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-  
-    @Column('varchar',{unique:true})
+
+    @Column('varchar', { unique: true })
     nombre: string;
-  
+
     @Column('varchar')
     descripcion: string;
-  
-    @Column({type: "decimal", precision: 10, scale: 2, default: 0})
+
+    @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
     precio: number;
-    
+
+    @ManyToOne(() => Consultorio, (consultorio) => consultorio.servicios)
+    consultorio: Consultorio;
+
     @ManyToMany(() => Cita, citas => citas.servicios)
     citas: Cita[];
-  
-    //@OneToMany(() => Cita, cita => cita.servicios)
-    //citas: Cita[];
 }

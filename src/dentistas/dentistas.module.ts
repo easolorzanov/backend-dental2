@@ -9,7 +9,7 @@ import { Consultorio } from 'src/consultorio/entities/consultorio.entity';
   imports: [TypeOrmModule.forFeature([
     Dentista, Consultorio
   ])],
-  
+
   controllers: [DentistasController],
   providers: [DentistasService],
 
