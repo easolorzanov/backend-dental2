@@ -176,6 +176,18 @@ export class CitasService {
     return citasC;
   }
 
+  async findHistoricoConsultorio(consultorioId: string) {
+    const citasC = await this.citaRepository.createQueryBuilder('citas')
+      .leftJoinAndSelect('citas.paciente', 'paciente')
+      .leftJoinAndSelect('citas.dentista', 'dentista')
+      .leftJoinAndSelect('dentista.consultorio', 'consultorio')
+      .leftJoinAndSelect('citas.servicios', 'servicio')
+      .where('consultorio.id = :consultorioId', { consultorioId })
+      .orderBy('citas.fecha', 'DESC')
+      .getMany();
+    return citasC;
+  }
+
   async findLastByPaciente(pacienteId: string) {
     const currentDate = new Date();
     const startOfDay = new Date(currentDate.setHours(0, 0, 0, 0));
@@ -186,6 +198,23 @@ export class CitasService {
       .where('citas.paciente.id = :pacienteId', { pacienteId })
       .andWhere('citas.fecha BETWEEN :startOfDay AND :endOfDay', { startOfDay, endOfDay })
       .getOne();
+
+    return lastCita;
+  }
+
+  async findLastByDentista(dentistaId: string) {
+    const currentDate = new Date();
+    const startOfDay = new Date(currentDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(currentDate.setHours(23, 59, 59, 999));
+
+    const lastCita = await this.citaRepository.createQueryBuilder('citas')
+      .leftJoinAndSelect('citas.paciente', 'paciente')
+      .leftJoinAndSelect('citas.dentista', 'dentista')
+      .where('citas.dentista.id = :dentistaId', { dentistaId })
+      .andWhere('citas.fecha BETWEEN :startOfDay AND :endOfDay', { startOfDay, endOfDay })
+      .andWhere('citas.estado = :estado', { estado: 'PENDIENTE' })
+      .orderBy('citas.fecha', 'ASC')
+      .getMany();
 
     return lastCita;
   }

@@ -48,8 +48,18 @@ export class CitasController {
     return this.citasService.findHistoricoDentista(id);
   }
 
+  @Get('historico-consultorio/:id')
+  findHistoricConsultorio(@Param('id') id: string) {
+    return this.citasService.findHistoricoConsultorio(id);
+  }
+
   @Get('last-paciente/:id')
   findLastByPaciente(@Param('id') id: string) {
     return this.citasService.findLastByPaciente(id);
+  }
+
+  @Get('last-dentista/:id')
+  findLastByDentista(@Param('id') id: string) {
+    return this.citasService.findLastByDentista(id);
   }
 }

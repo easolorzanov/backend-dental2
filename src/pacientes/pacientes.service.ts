@@ -13,6 +13,9 @@ export class PacientesService {
   constructor(
     @InjectRepository(Paciente)
     private readonly pacienteRepository: Repository<Paciente>,
+
+    @InjectRepository(Usuario)
+    private readonly usuarioRepository: Repository<Usuario>,
   ) { }
 
 
@@ -65,13 +68,18 @@ export class PacientesService {
 
   async remove(id: string) {
     const paciente = await this.findOne(id);
-    await this.pacienteRepository.remove(paciente);
+
+    paciente.status = false;
+
+    if (paciente.usuario)
+      await this.usuarioRepository.remove(paciente.usuario);
   }
 
   async getPacientePorConsultorio(consultorioId: string) {
     return await this.pacienteRepository.createQueryBuilder('paciente')
       .leftJoinAndSelect('paciente.consultorio', 'consultorio')
       .where('paciente.consultorio.id = :consultorioId', { consultorioId })
+      .andWhere('paciente.status = :status', { status: true })
       .getMany();
   }
 }

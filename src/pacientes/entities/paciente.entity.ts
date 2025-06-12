@@ -26,7 +26,9 @@ export class Paciente {
     @Column('varchar')
     celular: string;
 
-    @OneToOne(() => Usuario, usuario => usuario.dentista, { eager: true })
+    @OneToOne(() => Usuario, usuario => usuario.dentista, {
+        onDelete: 'SET NULL', nullable: true, eager: true
+    })
     @JoinColumn()
     usuario: Usuario;
 
@@ -35,4 +37,7 @@ export class Paciente {
 
     @ManyToOne(() => Consultorio, (consultorio) => consultorio.id, { eager: true })
     consultorio: Consultorio;
+
+    @Column({ default: true })
+    status: boolean;
 }
