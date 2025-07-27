@@ -12,6 +12,11 @@ export class DentistasController {
     return this.dentistasService.create(createDentistaDto);
   }
 
+  @Get('especialidades')
+  getEspecialidades() {
+    return this.dentistasService.getEspecialidades();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.dentistasService.findOne(id);

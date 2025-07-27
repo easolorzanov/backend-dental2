@@ -78,4 +78,22 @@ export class DentistasService {
     return dentistaConsultorio;
   }
 
+  async getEspecialidades() {
+    const especialidades = [
+      'Odontología General',
+      'Ortodoncia',
+      'Endodoncia',
+      'Periodoncia',
+      'Cirugía Oral y Maxilofacial',
+      'Odontopediatría',
+      'Prostodoncia',
+      'Implantología',
+      'Estética Dental',
+      'Radiología Dental',
+      'Patología Oral',
+      'Medicina Oral'
+    ];
+    return especialidades;
+  }
+
 }

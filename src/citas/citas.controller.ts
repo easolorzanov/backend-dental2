@@ -1,11 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { CitasService } from './citas.service';
 import { CreateCitaDto } from './dto/create-cita.dto';
 import { UpdateCitaDto } from './dto/update-cita.dto';
 
 @Controller('cita')
 export class CitasController {
-  constructor(private readonly citasService: CitasService) { }
+  constructor(private readonly citasService: CitasService) {}
 
   @Post()
   create(@Body() createCitaDto: CreateCitaDto) {
@@ -38,14 +46,22 @@ export class CitasController {
   }
 
   @Patch('/done/:id')
-  doneCita(@Param('id') id: string, @Body() body: { observacion?: string; recomendacion?: string }) {
-    const { observacion, recomendacion } = body
+  doneCita(
+    @Param('id') id: string,
+    @Body() body: { observacion?: string; recomendacion?: string },
+  ) {
+    const { observacion, recomendacion } = body;
     return this.citasService.doneCita(id, observacion, recomendacion);
   }
 
   @Get('historico-dentista/:id')
   findHistoricDentista(@Param('id') id: string) {
     return this.citasService.findHistoricoDentista(id);
+  }
+
+  @Get('historico-paciente/:id')
+  findHistoricPaciente(@Param('id') id: string) {
+    return this.citasService.findHistoricoPaciente(id);
   }
 
   @Get('historico-consultorio/:id')
@@ -61,5 +77,15 @@ export class CitasController {
   @Get('last-dentista/:id')
   findLastByDentista(@Param('id') id: string) {
     return this.citasService.findLastByDentista(id);
+  }
+
+  @Get('proximas-dentista/:id')
+  findProximasCitasDentista(@Param('id') id: string) {
+    return this.citasService.findProximasCitasDentista(id);
+  }
+
+  @Get('proximas-paciente/:id')
+  findProximasCitasPaciente(@Param('id') id: string) {
+    return this.citasService.findProximasCitasPaciente(id);
   }
 }
