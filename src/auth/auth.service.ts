@@ -105,9 +105,9 @@ export class AuthService {
     const existeUsername = await this.usuarioService.findByUsername(data.username);
     if (existeUsername) throw new BadRequestException("El nombre de usuario ya se encuentra registrado");
 
-    if (data.rol === "CLIENTE") {
-      const existeCliente = await this.pacientesService.findCedula(data.identificacion);
-      if (existeCliente) throw new BadRequestException("La cedula ya se encuentra registrada");
+    if (data.rol === "PACIENTE") {
+      const existePaciente = await this.pacientesService.findCedula(data.identificacion);
+      if (existePaciente) throw new BadRequestException("La cedula ya se encuentra registrada");
     }
 
     if (["ADMINISTRADOR", "DENTISTA"].includes(data.rol)) {

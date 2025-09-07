@@ -20,6 +20,11 @@ export class CitasController {
     return this.citasService.create(createCitaDto);
   }
 
+  @Get('actualizar-estados')
+  actualizarEstados() {
+    return this.citasService.actualizarEstadosManual();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.citasService.findOne(id);
@@ -28,6 +33,11 @@ export class CitasController {
   @Get('dentistaId/:id')
   findByDentista(@Param('id') id: string) {
     return this.citasService.findAllByDentista(id);
+  }
+
+  @Get('pacienteId/:id/calendar')
+  findByPacienteForCalendar(@Param('id') id: string) {
+    return this.citasService.findAllByPacienteForCalendar(id);
   }
 
   @Get('pacienteId/:id')
@@ -45,13 +55,17 @@ export class CitasController {
     return this.citasService.remove(id);
   }
 
+  @Patch('restore/:id')
+  restore(@Param('id') id: string) {
+    return this.citasService.restore(id);
+  }
+
   @Patch('/done/:id')
   doneCita(
     @Param('id') id: string,
-    @Body() body: { observacion?: string; recomendacion?: string },
+    @Body() completeCitaDto: any,
   ) {
-    const { observacion, recomendacion } = body;
-    return this.citasService.doneCita(id, observacion, recomendacion);
+    return this.citasService.doneCita(id, completeCitaDto);
   }
 
   @Get('historico-dentista/:id')
@@ -82,6 +96,11 @@ export class CitasController {
   @Get('proximas-dentista/:id')
   findProximasCitasDentista(@Param('id') id: string) {
     return this.citasService.findProximasCitasDentista(id);
+  }
+
+  @Get('historico-admin')
+  findHistoricAdmin() {
+    return this.citasService.findHistoricoAdmin();
   }
 
   @Get('proximas-paciente/:id')

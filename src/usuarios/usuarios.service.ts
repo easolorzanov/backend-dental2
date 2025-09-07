@@ -67,16 +67,17 @@ export class UsuariosService {
 
     try {
       if (updateUsuarioDto.password == null) {
-        delete usuario.password
-        return await this.usuarioRepository.update(id, usuario);
+        delete usuario.password;
+        await this.usuarioRepository.update(id, usuario);
+        return { "message": "Actualizado Correctamente" };
       } else {
         const hash = await this.hashPassword(usuario.password);
         const user = { ...usuario, password: hash };
         await this.usuarioRepository.update(id, user);
-        return { "message": "Actualizado Correctamente" }
+        return { "message": "Actualizado Correctamente" };
       }
     } catch (error) {
-      console.log(error);
+      this.logger.error('Error actualizando usuario:', error);
       throw new BadRequestException(error.detail);
     }
   }
