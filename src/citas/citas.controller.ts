@@ -107,4 +107,9 @@ export class CitasController {
   findProximasCitasPaciente(@Param('id') id: string) {
     return this.citasService.findProximasCitasPaciente(id);
   }
+
+  @Get('estadisticas/admin')
+  getEstadisticasAdmin() {
+    return this.citasService.getEstadisticasAdmin();
+  }
 }

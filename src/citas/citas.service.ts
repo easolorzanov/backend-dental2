@@ -8,7 +8,7 @@ import {
 import { CreateCitaDto } from './dto/create-cita.dto';
 import { UpdateCitaDto } from './dto/update-cita.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Repository, Between } from 'typeorm';
 import { Cita } from './entities/cita.entity';
 import { Servicio } from 'src/servicios/entities/servicio.entity';
 
@@ -622,6 +622,162 @@ export class CitasService {
     } catch (error) {
       this.logger.error('Error restaurando cita:', error);
       throw new InternalServerErrorException('Error al restaurar la cita');
+    }
+  }
+
+  async getEstadisticasAdmin() {
+    this.logger.log('Obteniendo estadísticas para administrador');
+    
+    try {
+      // Estadísticas generales
+      const totalCitas = await this.citaRepository.count({
+        where: { deleted: false }
+      });
+
+      const citasPendientes = await this.citaRepository.count({
+        where: { estado: 'PENDIENTE', deleted: false }
+      });
+
+      const citasCompletadas = await this.citaRepository.count({
+        where: { estado: 'HECHO', deleted: false }
+      });
+
+      const citasNoRealizadas = await this.citaRepository.count({
+        where: { estado: 'NO REALIZADA', deleted: false }
+      });
+
+      // Estadísticas del mes actual
+      const inicioMes = new Date();
+      inicioMes.setDate(1);
+      inicioMes.setHours(0, 0, 0, 0);
+
+      const finMes = new Date();
+      finMes.setMonth(finMes.getMonth() + 1);
+      finMes.setDate(0);
+      finMes.setHours(23, 59, 59, 999);
+
+      const citasEsteMes = await this.citaRepository.count({
+        where: {
+          fecha: Between(inicioMes, finMes),
+          deleted: false
+        }
+      });
+
+      const citasCompletadasEsteMes = await this.citaRepository.count({
+        where: {
+          fecha: Between(inicioMes, finMes),
+          estado: 'HECHO',
+          deleted: false
+        }
+      });
+
+      // Ingresos del mes
+      const ingresosResult = await this.citaRepository
+        .createQueryBuilder('cita')
+        .select('SUM(cita.total_cobrado)', 'total')
+        .where('cita.fecha BETWEEN :inicio AND :fin', {
+          inicio: inicioMes,
+          fin: finMes
+        })
+        .andWhere('cita.estado = :estado', { estado: 'HECHO' })
+        .andWhere('cita.deleted = :deleted', { deleted: false })
+        .getRawOne();
+
+      const ingresosMes = parseFloat(ingresosResult?.total || '0');
+
+      // Estadísticas de hoy
+      const hoy = new Date();
+      const inicioHoy = new Date(hoy);
+      inicioHoy.setHours(0, 0, 0, 0);
+      const finHoy = new Date(hoy);
+      finHoy.setHours(23, 59, 59, 999);
+
+      const citasHoy = await this.citaRepository.count({
+        where: {
+          fecha: Between(inicioHoy, finHoy),
+          deleted: false
+        }
+      });
+
+      const citasPendientesHoy = await this.citaRepository.count({
+        where: {
+          fecha: Between(inicioHoy, finHoy),
+          estado: 'PENDIENTE',
+          deleted: false
+        }
+      });
+
+      // Próximas citas (próximos 7 días)
+      const proximosSieteDias = new Date();
+      proximosSieteDias.setDate(proximosSieteDias.getDate() + 7);
+
+      const proximasCitas = await this.citaRepository.count({
+        where: {
+          fecha: Between(new Date(), proximosSieteDias),
+          estado: 'PENDIENTE',
+          deleted: false
+        }
+      });
+
+      // Estadísticas por dentista (top 5)
+      const estadisticasDentistas = await this.citaRepository
+        .createQueryBuilder('cita')
+        .leftJoin('cita.dentista', 'dentista')
+        .select([
+          'dentista.nombre as nombre',
+          'dentista.apellido as apellido',
+          'COUNT(cita.id) as total_citas',
+          'SUM(CASE WHEN cita.estado = \'HECHO\' THEN 1 ELSE 0 END) as citas_completadas'
+        ])
+        .where('cita.deleted = :deleted', { deleted: false })
+        .groupBy('dentista.id, dentista.nombre, dentista.apellido')
+        .orderBy('total_citas', 'DESC')
+        .limit(5)
+        .getRawMany();
+
+      // Servicios más solicitados
+      const serviciosMasSolicitados = await this.citaRepository
+        .createQueryBuilder('cita')
+        .leftJoin('cita.servicios', 'servicio')
+        .select([
+          'servicio.nombre as nombre',
+          'COUNT(servicio.id) as total_solicitudes'
+        ])
+        .where('cita.deleted = :deleted', { deleted: false })
+        .groupBy('servicio.id, servicio.nombre')
+        .orderBy('total_solicitudes', 'DESC')
+        .limit(5)
+        .getRawMany();
+
+      const estadisticas = {
+        resumen: {
+          totalCitas,
+          citasPendientes,
+          citasCompletadas,
+          citasNoRealizadas,
+          porcentajeCompletadas: totalCitas > 0 ? Math.round((citasCompletadas / totalCitas) * 100) : 0
+        },
+        mesActual: {
+          citasEsteMes,
+          citasCompletadasEsteMes,
+          ingresosMes,
+          porcentajeCompletadasMes: citasEsteMes > 0 ? Math.round((citasCompletadasEsteMes / citasEsteMes) * 100) : 0
+        },
+        hoy: {
+          citasHoy,
+          citasPendientesHoy
+        },
+        proximasCitas,
+        dentistas: estadisticasDentistas,
+        servicios: serviciosMasSolicitados
+      };
+
+      this.logger.log('Estadísticas generadas exitosamente');
+      return estadisticas;
+
+    } catch (error) {
+      this.logger.error('Error obteniendo estadísticas:', error);
+      throw new InternalServerErrorException('Error al obtener estadísticas');
     }
   }
 }
