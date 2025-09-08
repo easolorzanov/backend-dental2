@@ -14,14 +14,14 @@ async function bootstrap() {
 
   // CORS configuration for production
   const allowedOrigins = [
-    'https://backend-dental2.onrender.com',
-    'http://localhost:8100',
-    'https://localhost:8100',
     'capacitor://localhost',
     'ionic://localhost',
+    'http://localhost:8100',
+    'https://localhost:8100',
     'http://localhost',
     'http://localhost:8080',
-    'http://localhost:4200'
+    'http://localhost:4200',
+    '*'
   ];
 
   app.enableCors({
