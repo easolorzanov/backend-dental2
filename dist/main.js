@@ -10,9 +10,15 @@ async function bootstrap() {
         forbidNonWhitelisted: true,
     }));
     app.setGlobalPrefix('api');
-    const allowedOrigins = process.env.FRONTEND_URL
-        ? [process.env.FRONTEND_URL, 'http://localhost:8100', 'https://localhost:8100']
-        : ['http://localhost:8100', 'https://localhost:8100'];
+    const allowedOrigins = [
+        'http://localhost:8100',
+        'https://localhost:8100',
+        'capacitor://localhost',
+        'ionic://localhost',
+        'http://localhost',
+        'http://localhost:8080',
+        'http://localhost:4200'
+    ];
     app.enableCors({
         origin: allowedOrigins,
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',

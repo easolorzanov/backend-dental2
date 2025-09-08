@@ -11,12 +11,19 @@ async function bootstrap() {
     })
   );
   app.setGlobalPrefix('api');
-  
+
   // CORS configuration for production
-  const allowedOrigins = process.env.FRONTEND_URL 
-    ? [process.env.FRONTEND_URL, 'http://localhost:8100', 'https://localhost:8100']
-    : ['http://localhost:8100', 'https://localhost:8100'];
-    
+  const allowedOrigins = [
+    'https://backend-dental2.onrender.com',
+    'http://localhost:8100',
+    'https://localhost:8100',
+    'capacitor://localhost',
+    'ionic://localhost',
+    'http://localhost',
+    'http://localhost:8080',
+    'http://localhost:4200'
+  ];
+
   app.enableCors({
     origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
