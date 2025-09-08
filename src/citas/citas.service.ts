@@ -627,7 +627,7 @@ export class CitasService {
 
   async getEstadisticasAdmin() {
     this.logger.log('Obteniendo estadísticas para administrador');
-    
+
     try {
       // Estadísticas generales
       const totalCitas = await this.citaRepository.count({

@@ -11,6 +11,7 @@ import { CitasModule } from './citas/citas.module';
 import { ServiciosModule } from './servicios/servicios.module';
 import { AuthModule } from './auth/auth.module';
 import { ConsultorioModule } from './consultorio/consultorio.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { ConsultorioModule } from './consultorio/consultorio.module';
     ServiciosModule,
     AuthModule,
     ConsultorioModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

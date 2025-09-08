@@ -11,13 +11,21 @@ async function bootstrap() {
     })
   );
   app.setGlobalPrefix('api');
+  
+  // CORS configuration for production
+  const allowedOrigins = process.env.FRONTEND_URL 
+    ? [process.env.FRONTEND_URL, 'http://localhost:8100', 'https://localhost:8100']
+    : ['http://localhost:8100', 'https://localhost:8100'];
+    
   app.enableCors({
-    origin: true,
+    origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 
-  await app.listen(process.env.PORT || 3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 Aplicación dental ejecutándose en puerto ${port}`);
 }
 
 bootstrap();
