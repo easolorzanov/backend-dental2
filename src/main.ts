@@ -14,6 +14,7 @@ async function bootstrap() {
 
   // CORS configuration for production
   const allowedOrigins = [
+    'https://backend-dental2.onrender.com',
     'capacitor://localhost',
     'ionic://localhost',
     'http://localhost:8100',
