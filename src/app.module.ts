@@ -27,7 +27,7 @@ import { HealthModule } from './health/health.module';
         url: config.get('DB_CONN'),
         autoLoadEntities: true,
         synchronize: true,
-        timezone: 'Etc/UTC',
+        timezone: 'America/Bogota',
       })
     }),
     PacientesModule,

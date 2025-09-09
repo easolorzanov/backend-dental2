@@ -39,7 +39,7 @@ exports.AppModule = AppModule = __decorate([
                     url: config.get('DB_CONN'),
                     autoLoadEntities: true,
                     synchronize: true,
-                    timezone: 'Etc/UTC',
+                    timezone: 'America/Bogota',
                 })
             }),
             pacientes_module_1.PacientesModule,
