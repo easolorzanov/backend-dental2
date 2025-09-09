@@ -394,6 +394,7 @@ export class CitasService {
     // Verificar que la cita existe y no esté eliminada
     const citaExistente = await this.citaRepository.findOne({
       where: { id: id, deleted: false },
+      relations: ['paciente', 'dentista', 'servicios'],
     });
 
     if (!citaExistente) {
@@ -428,6 +429,75 @@ export class CitasService {
     });
 
     if (!cita) throw new NotFoundException(`Cita ${id} no encontrada`);
+
+    // Verificar si hubo cambios significativos que requieren notificación
+    const fechaCambio = new Date(citaExistente.fecha).getTime() !== new Date(updateCitaDto.fecha).getTime();
+    const dentistaIdNuevo = typeof updateCitaDto.dentista === 'object' ? updateCitaDto.dentista.id : updateCitaDto.dentista;
+    const dentistaCambio = citaExistente.dentista.id !== dentistaIdNuevo;
+    
+    if (fechaCambio || dentistaCambio) {
+      // Formatear fechas para los correos
+      const fechaAnteriorFormateada = new Date(citaExistente.fecha).toLocaleString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const fechaNuevaFormateada = new Date(updateCitaDto.fecha).toLocaleString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      try {
+        // Enviar correo al paciente
+        await this.mailerService.sendMail({
+          to: citaExistente.paciente.correo,
+          subject: 'Cita modificada',
+          text: `
+            Estimad@ ${citaExistente.paciente.apellido} ${citaExistente.paciente.nombre}, 
+            
+            Su cita ha sido modificada:
+            
+            ${fechaCambio ? `• Fecha anterior: ${fechaAnteriorFormateada}
+            • Nueva fecha: ${fechaNuevaFormateada}` : ''}
+            
+            ${dentistaCambio ? `• Se ha cambiado el dentista asignado` : ''}
+            
+            Por favor, tome nota de estos cambios y no falte a su cita.
+          `,
+        });
+        this.logger.log(`Correo de modificación enviado al paciente: ${citaExistente.paciente.correo}`);
+
+        // Si cambió la fecha, notificar al dentista
+        if (fechaCambio) {
+          await this.mailerService.sendMail({
+            to: citaExistente.dentista.correo,
+            subject: 'Cita reprogramada',
+            text: `
+              Estimad@ ${citaExistente.dentista.apellido} ${citaExistente.dentista.nombre},
+              
+              La cita del paciente ${citaExistente.paciente.apellido} ${citaExistente.paciente.nombre} 
+              ha sido reprogramada:
+              
+              • Fecha anterior: ${fechaAnteriorFormateada}
+              • Nueva fecha: ${fechaNuevaFormateada}
+              
+              Por favor, actualice su agenda con la nueva fecha.
+            `,
+          });
+          this.logger.log(`Correo de reprogramación enviado al dentista: ${citaExistente.dentista.correo}`);
+        }
+
+      } catch (error) {
+        this.logger.error('Error enviando correos de notificación de modificación:', error);
+        // No lanzar error aquí, continuar con la actualización
+      }
+    }
 
     try {
       await this.citaRepository.save(cita);
