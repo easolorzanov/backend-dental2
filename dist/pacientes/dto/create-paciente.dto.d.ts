@@ -6,5 +6,6 @@ export declare class CreatePacienteDto {
     direccion?: string;
     correo: string;
     celular: string;
+    status?: boolean;
     usuario: Usuario;
 }

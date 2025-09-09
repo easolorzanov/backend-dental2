@@ -5,6 +5,7 @@ export declare class PacientesController {
     private readonly pacientesService;
     constructor(pacientesService: PacientesService);
     create(createPacienteDto: CreatePacienteDto): Promise<import("./entities/paciente.entity").Paciente>;
+    findOne(id: string): Promise<import("./entities/paciente.entity").Paciente>;
     update(id: string, updatePacienteDto: UpdatePacienteDto): Promise<import("./entities/paciente.entity").Paciente>;
     remove(id: string): Promise<{
         message: string;

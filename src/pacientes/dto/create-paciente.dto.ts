@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsEmail, IsNotEmpty, IsOptional, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Usuario } from 'src/usuarios/entities/usuario.entity';
 
@@ -26,6 +26,10 @@ export class CreatePacienteDto {
     @IsString()
     @IsNotEmpty()
     celular: string;
+
+    @IsBoolean()
+    @IsOptional()
+    status?: boolean;
 
     @IsNotEmpty()
     @Type(() => Usuario)

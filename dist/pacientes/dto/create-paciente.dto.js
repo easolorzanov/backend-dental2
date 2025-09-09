@@ -47,6 +47,11 @@ __decorate([
     __metadata("design:type", String)
 ], CreatePacienteDto.prototype, "celular", void 0);
 __decorate([
+    (0, class_validator_1.IsBoolean)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Boolean)
+], CreatePacienteDto.prototype, "status", void 0);
+__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_transformer_1.Type)(() => usuario_entity_1.Usuario),
     __metadata("design:type", usuario_entity_1.Usuario)

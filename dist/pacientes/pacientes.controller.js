@@ -24,6 +24,9 @@ let PacientesController = class PacientesController {
     create(createPacienteDto) {
         return this.pacientesService.create(createPacienteDto);
     }
+    findOne(id) {
+        return this.pacientesService.findOne(id);
+    }
     update(id, updatePacienteDto) {
         return this.pacientesService.update(id, updatePacienteDto);
     }
@@ -42,6 +45,13 @@ __decorate([
     __metadata("design:paramtypes", [create_paciente_dto_1.CreatePacienteDto]),
     __metadata("design:returntype", void 0)
 ], PacientesController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], PacientesController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
