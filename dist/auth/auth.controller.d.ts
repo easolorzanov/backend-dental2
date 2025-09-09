@@ -5,6 +5,6 @@ export declare class AuthController {
     login(req: any): Promise<{
         access_token: string;
     }>;
-    register(req: any): Promise<import("../dentistas/entities/dentista.entity").Dentista | import("../pacientes/entities/paciente.entity").Paciente>;
+    register(req: any): Promise<import("../pacientes/entities/paciente.entity").Paciente | import("../dentistas/entities/dentista.entity").Dentista>;
     test(req: any): Promise<any>;
 }

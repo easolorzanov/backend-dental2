@@ -71,8 +71,21 @@ export class PacientesService {
 
     paciente.status = false;
 
-    if (paciente.usuario)
-      await this.usuarioRepository.remove(paciente.usuario);
+    try {
+      // Guardar los cambios del paciente (status = false)
+      await this.pacienteRepository.save(paciente);
+      
+      // Si tiene usuario asociado, también eliminarlo
+      if (paciente.usuario) {
+        await this.usuarioRepository.remove(paciente.usuario);
+      }
+      
+      this.logger.log(`Paciente ${id} eliminado (status = false)`);
+      return { message: 'Paciente eliminado exitosamente' };
+    } catch (error) {
+      this.logger.error('Error eliminando paciente:', error);
+      throw new InternalServerErrorException('Error al eliminar el paciente');
+    }
   }
 
   async getPacientePorConsultorio(consultorioId: string) {

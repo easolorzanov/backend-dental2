@@ -6,6 +6,8 @@ export declare class PacientesController {
     constructor(pacientesService: PacientesService);
     create(createPacienteDto: CreatePacienteDto): Promise<import("./entities/paciente.entity").Paciente>;
     update(id: string, updatePacienteDto: UpdatePacienteDto): Promise<import("./entities/paciente.entity").Paciente>;
-    remove(id: string): Promise<void>;
+    remove(id: string): Promise<{
+        message: string;
+    }>;
     getPacienteByConsultorio(consultorioId: string): Promise<import("./entities/paciente.entity").Paciente[]>;
 }

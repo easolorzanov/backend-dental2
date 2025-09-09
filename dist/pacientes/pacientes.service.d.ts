@@ -13,6 +13,8 @@ export declare class PacientesService {
     findCedula(identificacion: string): Promise<Paciente>;
     findOneIdUser(usuario: Usuario): Promise<Paciente>;
     update(id: string, updatePacienteDto: UpdatePacienteDto): Promise<Paciente>;
-    remove(id: string): Promise<void>;
+    remove(id: string): Promise<{
+        message: string;
+    }>;
     getPacientePorConsultorio(consultorioId: string): Promise<Paciente[]>;
 }

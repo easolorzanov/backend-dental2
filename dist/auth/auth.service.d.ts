@@ -14,6 +14,6 @@ export declare class AuthService {
     login(user: any): Promise<{
         access_token: string;
     }>;
-    register(data: any): Promise<import("../dentistas/entities/dentista.entity").Dentista | import("../pacientes/entities/paciente.entity").Paciente>;
+    register(data: any): Promise<import("../pacientes/entities/paciente.entity").Paciente | import("../dentistas/entities/dentista.entity").Dentista>;
     private validateRegister;
 }

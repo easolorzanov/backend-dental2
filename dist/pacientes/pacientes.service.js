@@ -70,8 +70,18 @@ let PacientesService = class PacientesService {
     async remove(id) {
         const paciente = await this.findOne(id);
         paciente.status = false;
-        if (paciente.usuario)
-            await this.usuarioRepository.remove(paciente.usuario);
+        try {
+            await this.pacienteRepository.save(paciente);
+            if (paciente.usuario) {
+                await this.usuarioRepository.remove(paciente.usuario);
+            }
+            this.logger.log(`Paciente ${id} eliminado (status = false)`);
+            return { message: 'Paciente eliminado exitosamente' };
+        }
+        catch (error) {
+            this.logger.error('Error eliminando paciente:', error);
+            throw new common_1.InternalServerErrorException('Error al eliminar el paciente');
+        }
     }
     async getPacientePorConsultorio(consultorioId) {
         return await this.pacienteRepository.createQueryBuilder('paciente')
